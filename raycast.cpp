@@ -35,7 +35,6 @@ void render();
 void close();
 double arcToRad(int);
 
-// SDL_Rect destRect;
 const SDL_Point playerCenter = {32, 32};
 SDL_Texture *playerTexture;
 SDL_Surface *surfaceLoader;
