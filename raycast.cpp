@@ -74,7 +74,7 @@ public:
         _rotation = ANGLE0;
     }
 
-    const int speed = 8;
+    const int speed = 6;
 
     const int &rotation() const { return _rotation; }
 
@@ -241,36 +241,35 @@ void runGame()
 
     while (gameLoop)
     {
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+        if (keys[SDL_SCANCODE_UP])
+        {
+            player->moveForward();
+        }
+        if (keys[SDL_SCANCODE_RIGHT])
+        {
+            player->rotateRight();
+        }
+        if (keys[SDL_SCANCODE_DOWN])
+        {
+            player->moveBackwards();
+        }
+        if (keys[SDL_SCANCODE_LEFT])
+        {
+            player->rotateLeft();
+        }
+
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
                 gameLoop = false;
-
-            else if (event.type == SDL_KEYDOWN)
-            {
-                const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-                if (keys[SDL_SCANCODE_UP])
-                {
-                    player->moveForward();
-                }
-                if (keys[SDL_SCANCODE_RIGHT])
-                {
-                    player->rotateRight();
-                }
-                if (keys[SDL_SCANCODE_DOWN])
-                {
-                    player->moveBackwards();
-                }
-                if (keys[SDL_SCANCODE_LEFT])
-                {
-                    player->rotateLeft();
-                }
-            }
         }
 
         render();
+
+        SDL_Delay(16);
     }
 }
 
