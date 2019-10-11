@@ -3,7 +3,7 @@
 
 class Player
 {
-    int _rotation;
+    int _rotation = Config::ANGLE0;
     SDL_Rect spriteRectangle;
 
     const double &xDirection() const;

@@ -1,21 +1,28 @@
 PROGRAM = Raycast
-FILES.c = trigonometry.cpp player.cpp raycast.cpp
-FILES.h = config.hpp trigonometry.hpp player.hpp
-FILES.o = ${FILES.c:.cpp=.o}
 
-CC 		= g++
-LDLIBS 	= -lSDL2 -lSDL2_image
+CC := g++
+SRCDIR := src
+BUILDDIR := build
+TARGET := bin
 
-all: 	${PROGRAM}
+SOURCES := $(shell find $(SRCDIR) -type f -name *.cpp)
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%, $(SOURCES:.cpp=.o ))
+LIBS := -lSDL2 -lSDL2_image
+INC := -I include
 
-${PROGRAM}: ${FILES.o}
-	${CC} -o $@ ${FILES.o} ${LDLIBS}
+all: $(TARGET)/$(PROGRAM)
 
-trigonometry.o: ${FILES.h}
-player.o: 		${FILES.h}
-raycast.o: 		${FILES.h}
+$(TARGET)/$(PROGRAM): $(OBJECTS)
+	@echo " Linking...";
+	@mkdir -p $(TARGET);
+	$(CC) $^ -o $(TARGET)/$(PROGRAM) $(LIBS)
 
-RM_FR = rm -rf
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(BUILDDIR);
+	$(CC) $(INC) -c -o $@ $<
+
+RM_R := rm -r
 
 clean:
-	${RM_FR} ${FILES.o} ${PROGRAM}
+	@echo " Cleaning...";
+	$(RM_R) $(BUILDDIR) $(TARGET)

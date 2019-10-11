@@ -10,7 +10,6 @@ Player::Player(const int &x, const int &y)
     spriteRectangle.y = y;
     spriteRectangle.w = Config::SPRITE_SIZE;
     spriteRectangle.h = Config::SPRITE_SIZE;
-    _rotation = Config::ANGLE0;
 }
 
 // Private methods
