@@ -5,8 +5,7 @@
 #include "config.hpp"
 #include "trigonometry.hpp"
 #include "player.hpp"
-
-const double PROJECTION_TO_360_RATIO = Config::ANGLE360 / double(360);
+#include "level.hpp"
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -21,23 +20,28 @@ void runGame();
 void render();
 void close();
 
-const SDL_Point playerCenter = {32, 32};
+// const SDL_Point playerCenter = {32, 32};
 SDL_Texture *playerTexture;
 SDL_Surface *surfaceLoader;
 
-Player *player;
+// Player *player;
+Level *level;
 
 int main(int argc, char *argv[])
 {
     if (!initEverything())
         return -1;
 
-    surfaceLoader = IMG_Load("sprites/player.png");
-    playerTexture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
-
-    SDL_FreeSurface(surfaceLoader);
-
-    player = new Player(20, 20);
+    level = new Level(std::vector<std::vector<char>> {
+            {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+            {'w', '.', '.', '.', '.', '.', 'w'},
+            {'w', '.', '.', '.', '.', '.', 'w'},
+            {'w', '.', '.', '.', '.', '.', 'w'},
+            {'w', '.', '.', '.', '.', '.', 'w'},
+            {'w', '.', '.', '.', '.', '.', 'w'},
+            {'w', 'w', 'w', 'w', 'w', '.', 'w'},
+        });
+    level->init(renderer);
 
     runGame();
 
@@ -47,13 +51,15 @@ int main(int argc, char *argv[])
 
 void render()
 {
-    // Clear the window and make it all green
+    // Clear the window
     SDL_RenderClear(renderer);
 
-    double playerAngle = floor(player->spriteRotation() / PROJECTION_TO_360_RATIO);
+    // double playerAngle = floor(player->spriteRotation() / PROJECTION_TO_360_RATIO);
 
-    SDL_RenderCopyEx(
-        renderer, playerTexture, NULL, player->rectangle(), playerAngle, &playerCenter, SDL_FLIP_NONE);
+    // SDL_RenderCopyEx(
+    //     renderer, playerTexture, NULL, player->rectangle(), playerAngle, &playerCenter, SDL_FLIP_NONE);
+
+    level->render();
 
     // Render changes
     SDL_RenderPresent(renderer);
@@ -144,19 +150,19 @@ void runGame()
 
         if (keys[SDL_SCANCODE_UP])
         {
-            player->moveForward();
+            level->player()->moveForward();
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            player->rotateRight();
+            level->player()->rotateRight();
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            player->moveBackwards();
+            level->player()->moveBackwards();
         }
         if (keys[SDL_SCANCODE_LEFT])
         {
-            player->rotateLeft();
+            level->player()->rotateLeft();
         }
 
         SDL_Event event;
