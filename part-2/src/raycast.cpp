@@ -54,11 +54,6 @@ void render()
     // Clear the window
     SDL_RenderClear(renderer);
 
-    // double playerAngle = floor(player->spriteRotation() / PROJECTION_TO_360_RATIO);
-
-    // SDL_RenderCopyEx(
-    //     renderer, playerTexture, NULL, player->rectangle(), playerAngle, &playerCenter, SDL_FLIP_NONE);
-
     level->render();
 
     // Render changes
