@@ -7,8 +7,8 @@ namespace Config
 {
 const unsigned int screenSizeX = 640;
 const unsigned int screenSizeY = 400;
-const unsigned int SPRITE_SIZE = 64;
 
+const int SPRITE_SIZE = 64;
 const int ANGLE60 = screenSizeX;
 const int ANGLE30 = floor(ANGLE60 / 2);
 const int ANGLE15 = floor(ANGLE30 / 2);

@@ -6,6 +6,7 @@
 #include "trigonometry.hpp"
 #include "player.hpp"
 #include "level.hpp"
+#include "raycaster.hpp"
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -20,34 +21,34 @@ void runGame();
 void render();
 void close();
 
-// const SDL_Point playerCenter = {32, 32};
 SDL_Texture *playerTexture;
 SDL_Surface *surfaceLoader;
 
-// Player *player;
 Level *level;
+RayCaster *rayCaster;
 
 int main(int argc, char *argv[])
 {
     if (!initEverything())
         return -1;
 
-    level = new Level(std::vector<std::vector<char>> {
-            {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
-            {'w', '.', '.', '.', '.', '.', 'w'},
-            {'w', '.', '.', '.', '.', '.', 'w'},
-            {'w', '.', '.', '.', '.', '.', 'w'},
-            {'w', '.', '.', '.', '.', '.', 'w'},
-            {'w', '.', '.', '.', '.', '.', 'w'},
-            {'w', 'w', 'w', 'w', 'w', '.', 'w'},
-        });
-    level->init(renderer);
+    const std::vector<std::vector<char>> sampleLevel = {
+        {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+        {'w', '.', '.', '.', '.', '.', 'w'},
+        {'w', '.', '.', '.', '.', '.', 'w'},
+        {'w', '.', 'w', 'w', 'w', '.', 'w'},
+        {'w', '.', '.', '.', '.', '.', 'w'},
+        {'w', '.', '.', '.', '.', '.', 'w'},
+        {'w', 'w', 'w', 'w', 'w', '.', 'w'},
+    };
+    level = new Level(sampleLevel);
+    rayCaster = new RayCaster(sampleLevel);
+    level->init(renderer, rayCaster);
 
     runGame();
 
     close();
 }
-
 
 void render()
 {
@@ -103,8 +104,7 @@ bool createWindow()
         SDL_WINDOWPOS_CENTERED,
         Config::screenSizeX,
         Config::screenSizeY,
-        0
-    );
+        0);
 
     if (window == nullptr)
     {

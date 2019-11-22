@@ -4,11 +4,14 @@
 class Player
 {
     int _rotation;
+    const int _viewDistance = 20;
 
     SDL_Renderer *_renderer;
     SDL_Rect _spriteRectangle;
+    SDL_Rect _viewArea;
     SDL_Texture *_texture;
 
+    void calculateViewArea();
     const double &xDirection() const;
     const double &yDirection() const;
 
@@ -21,6 +24,7 @@ public:
     const int &rotation() const;
     const int spriteRotation() const;
     const SDL_Rect *rectangle() const;
+    const SDL_Rect *viewArea() const;
     SDL_Texture *texture() const;
     void rotateRight();
     void rotateLeft();

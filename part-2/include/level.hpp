@@ -5,16 +5,18 @@
 
 #include <vector>
 #include "player.hpp"
+#include "raycaster.hpp"
 
 class Level
 {
     Player *_player;
+    RayCaster *_rayCaster;
     std::vector<std::vector<char>> _map;
     SDL_Renderer *_renderer;
 
 public:
     Level(const std::vector<std::vector<char>> &);
-    void init(SDL_Renderer *);
+    void init(SDL_Renderer *, RayCaster *);
     void render();
     Player *player() const;
 };
