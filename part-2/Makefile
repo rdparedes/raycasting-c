@@ -19,7 +19,7 @@ $(TARGET)/$(PROGRAM): $(OBJECTS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(BUILDDIR);
-	$(CC) $(INC) -c -o $@ $<
+	$(CC) $(INC) -c -g -o $@ $<
 
 RM_R := rm -r
 
