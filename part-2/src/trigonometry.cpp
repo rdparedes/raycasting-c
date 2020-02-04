@@ -20,6 +20,11 @@ double arcToRad(int angle)
     return ((double(angle) * PI) / Config::ANGLE180);
 }
 
+double degToRad(int degree)
+{
+    return degree * PI / 180.0;
+}
+
 } // namespace Trigonometry
 
 bool Trigonometry::load()
@@ -36,17 +41,26 @@ bool Trigonometry::load()
 
         // Left - Right
         fXStepTable[i] = double(Config::SPRITE_SIZE) / fTanTable[i];
-        if (i >= Config::ANGLE90 && i < Config::ANGLE270 && fXStepTable[i] > 0)
-            fXStepTable[i] -= 1;
+        if (i >= Config::ANGLE90 && i < Config::ANGLE270)
+        {
+            if (fXStepTable[i] > 0)
+                fXStepTable[i] = -fXStepTable[i];
+        }
         else if (fXStepTable[i] < 0)
-            fXStepTable[i] -= 1;
-
+        {
+            fXStepTable[i] = -fXStepTable[i];
+        }
         // Up - Down
         fYStepTable[i] = double(Config::SPRITE_SIZE) * fTanTable[i];
-        if (i >= Config::ANGLE0 && i < Config::ANGLE180 && fYStepTable[i] < 0)
-            fYStepTable[i] -= 1;
+        if (i >= Config::ANGLE0 && i < Config::ANGLE180)
+        {
+            if (fYStepTable[i] < 0)
+                fYStepTable[i] = -fYStepTable[i];
+        }
         else if (fYStepTable[i] > 0)
-            fYStepTable[i] -= 1;
+        {
+            fYStepTable[i] = -fYStepTable[i];
+        }
     }
 
     // Fishbowl distortion fix

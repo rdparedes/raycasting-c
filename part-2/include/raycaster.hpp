@@ -4,6 +4,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include "player.hpp"
+#include "wall.hpp"
 
 struct RayCollision
 {
@@ -14,9 +15,10 @@ struct RayCollision
 class RayCaster
 {
     std::vector<std::vector<char>> _map;
+    SDL_Renderer *_renderer;
 
-    void castSingleRay(const SDL_Rect *, const SDL_Rect *, int &) const;
-    void drawRay(const RayCollision *) const;
+    void castSingleRay(const SDL_Rect *, const SDL_Rect *, const int &, const int &, const Wall *) const;
+    void drawRay(const RayCollision *, const int &, const int &, const Wall *) const;
 
     const RayCollision *findHorizontalRayCollision(const SDL_Rect *, const SDL_Rect *, const int &) const;
     double findFirstHIntersectionX(const int &, const SDL_Rect *, const double &) const;
@@ -35,7 +37,8 @@ class RayCaster
 
 public:
     RayCaster(const std::vector<std::vector<char>> &);
-    void castRays(const Player *) const;
+    void init(SDL_Renderer *);
+    void castRays(const Player *, const Wall *) const;
 };
 
 #endif

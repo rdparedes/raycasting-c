@@ -1,12 +1,14 @@
 #ifndef GUARD_player_hpp
 #define GUARD_player_hpp
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 class Player
 {
     int _rotation;
     const int _viewDistance = 20;
 
-    SDL_Renderer *_renderer;
     SDL_Rect _spriteRectangle;
     SDL_Rect _viewArea;
     SDL_Texture *_texture;

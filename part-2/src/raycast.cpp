@@ -2,8 +2,8 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
-#include "config.hpp"
 #include "trigonometry.hpp"
+#include "config.hpp"
 #include "player.hpp"
 #include "level.hpp"
 #include "raycaster.hpp"

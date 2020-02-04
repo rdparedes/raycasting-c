@@ -1,6 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 #include "config.hpp"
 #include "trigonometry.hpp"
 #include "player.hpp"
@@ -38,9 +35,8 @@ void Player::calculateViewArea()
 
 void Player::init(SDL_Renderer *renderer)
 {
-    _renderer = renderer;
     SDL_Surface *surfaceLoader = IMG_Load("sprites/player.png");
-    _texture = SDL_CreateTextureFromSurface(_renderer, surfaceLoader);
+    _texture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
     calculateViewArea();
 }

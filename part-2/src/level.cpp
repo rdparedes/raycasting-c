@@ -9,9 +9,12 @@ Level::Level(const std::vector<std::vector<char>> &map)
 void Level::init(SDL_Renderer *renderer, RayCaster *rayCaster)
 {
     _renderer = renderer;
+    _rayCaster = rayCaster;
+    _rayCaster->init(renderer);
     _player = new Player(128, 128);
     _player->init(_renderer);
-    _rayCaster = rayCaster;
+    _wall = new Wall();
+    _wall->init(_renderer);
 }
 
 void Level::render()
@@ -29,7 +32,7 @@ void Level::render()
         SDL_FLIP_NONE);
 
     // Render 3d projection
-    _rayCaster->castRays(_player);
+    _rayCaster->castRays(_player, _wall);
 
 }
 

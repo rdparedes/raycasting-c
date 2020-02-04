@@ -5,11 +5,13 @@
 
 #include <vector>
 #include "player.hpp"
+#include "wall.hpp"
 #include "raycaster.hpp"
 
 class Level
 {
     Player *_player;
+    Wall *_wall;
     RayCaster *_rayCaster;
     std::vector<std::vector<char>> _map;
     SDL_Renderer *_renderer;
