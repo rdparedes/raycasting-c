@@ -22,8 +22,7 @@ public:
     const int speed = 6;
     const SDL_Point center = {32, 32};
 
-    Player(const int &, const int &);
-    void init(SDL_Renderer *);
+    void init(SDL_Renderer *, const int &, const int &);
     const int &rotation() const;
     const int spriteRotation() const;
     const SDL_Point *position() const;

@@ -2,9 +2,14 @@
 #include "trigonometry.hpp"
 #include "player.hpp"
 
-Player::Player(const int &x, const int &y) : _rotation(Config::ANGLE0)
+void Player::init(SDL_Renderer *renderer, const int &initialX, const int &initialY)
 {
-    move(x, y);
+    SDL_Surface *surfaceLoader = IMG_Load("sprites/player.png");
+    _texture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
+    SDL_FreeSurface(surfaceLoader);
+    _rotation = Config::ANGLE0;
+    move(initialX, initialY);
+    calculateViewArea();
 }
 
 // Private methods
@@ -29,14 +34,6 @@ void Player::calculateViewArea()
 }
 
 // Public methods
-
-void Player::init(SDL_Renderer *renderer)
-{
-    SDL_Surface *surfaceLoader = IMG_Load("sprites/player.png");
-    _texture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
-    SDL_FreeSurface(surfaceLoader);
-    calculateViewArea();
-}
 
 const int &Player::rotation() const { return _rotation; }
 

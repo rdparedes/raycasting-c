@@ -3,22 +3,18 @@
 
 #include <vector>
 #include <SDL2/SDL.h>
+#include <map>
 #include "player.hpp"
-#include "wall.hpp"
-
-struct RayCollision
-{
-    double distance;
-    double offset;
-};
+#include "map.hpp"
+#include "rayCollision.hpp"
 
 class RayCaster
 {
-    std::vector<std::vector<char>> _map;
+    const Map *_map;
     SDL_Renderer *_renderer;
 
-    void castSingleRay(const SDL_Point *, const SDL_Rect *, const int &, const int &, const Wall *) const;
-    void drawRay(const RayCollision *, const int &, const int &, const Wall *) const;
+    void castSingleRay(const SDL_Point *, const SDL_Rect *, const int &, const int &) const;
+    void drawRay(const RayCollision *, const int &, const int &) const;
 
     const RayCollision *findHorizontalRayCollision(const SDL_Point *, const SDL_Rect *, const int &) const;
     double findFirstHIntersectionX(const int &, const SDL_Point *, const double &) const;
@@ -33,12 +29,10 @@ class RayCaster
     double findNextVIntersectionY(const int &) const;
 
     bool rayIsOutsideViewArea(const SDL_Rect *, const double&, const double&) const;
-    bool solidExists(const int &, const int &) const;
 
 public:
-    RayCaster(const std::vector<std::vector<char>> &);
-    void init(SDL_Renderer *);
-    void castRays(const Player *, const Wall *) const;
+    void init(const Map *, SDL_Renderer *);
+    void castRays(const Player *) const;
 };
 
 #endif

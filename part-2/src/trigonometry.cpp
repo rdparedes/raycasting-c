@@ -1,6 +1,6 @@
 #include <cmath>
-#include "trigonometry.hpp"
 #include <iostream>
+#include "trigonometry.hpp"
 
 namespace Trigonometry
 {

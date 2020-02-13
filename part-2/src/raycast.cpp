@@ -7,6 +7,8 @@
 #include "player.hpp"
 #include "level.hpp"
 #include "raycaster.hpp"
+#include "map.hpp"
+#include "solidObject.hpp"
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -24,6 +26,8 @@ void close();
 SDL_Texture *playerTexture;
 SDL_Surface *surfaceLoader;
 
+SolidObject *wall;
+Map *sampleMap;
 Level *level;
 RayCaster *rayCaster;
 
@@ -32,17 +36,22 @@ int main(int argc, char *argv[])
     if (!initEverything())
         return -1;
 
-    const std::vector<std::vector<char>> sampleLevel = {
-        {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
-        {'w', '.', '.', '.', '.', '.', 'w'},
-        {'w', '.', '.', '.', '.', '.', 'w'},
-        {'w', '.', 'w', 'w', 'w', '.', 'w'},
-        {'w', '.', '.', '.', '.', '.', 'w'},
-        {'w', '.', '.', '.', '.', '.', 'w'},
-        {'w', 'w', 'w', 'w', 'w', '.', 'w'},
-    };
-    level = new Level(sampleLevel);
-    rayCaster = new RayCaster(sampleLevel);
+    sampleMap = new Map();
+    level = new Level();
+    rayCaster = new RayCaster();
+    wall = new SolidObject();
+    wall->init(renderer, "sprites/bricks.png");
+    sampleMap->init({
+                        {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', 'w', 'w', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w'},
+                        {'w', 'w', 'w', 'w', 'w', '.', 'w'},
+                    },
+                    {{'w', wall}});
+    rayCaster->init(sampleMap, renderer);
     level->init(renderer, rayCaster);
 
     runGame();
