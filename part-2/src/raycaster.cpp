@@ -23,24 +23,21 @@ void RayCaster::castSingleRay(const SDL_Point *playerPosition,
     const RayCollision *verticalRayCollision = findVerticalRayCollision(playerPosition,
                                                                         playerViewArea,
                                                                         rayDegree);
+
+    if (horizontalRayCollision == NULL && verticalRayCollision == NULL)
+        return;
+
     if (horizontalRayCollision != NULL && verticalRayCollision == NULL)
-    {
         drawRay(horizontalRayCollision, rayIndex, rayDegree);
-    }
     else if (verticalRayCollision != NULL && horizontalRayCollision == NULL)
-    {
         drawRay(verticalRayCollision, rayIndex, rayDegree);
-    }
-    else if (horizontalRayCollision != NULL && verticalRayCollision != NULL)
+    else
     {
+        // Draw the ray which is closest to the player
         if (horizontalRayCollision->distance < verticalRayCollision->distance)
-        {
             drawRay(horizontalRayCollision, rayIndex, rayDegree);
-        }
         else
-        {
             drawRay(verticalRayCollision, rayIndex, rayDegree);
-        }
     }
 }
 
