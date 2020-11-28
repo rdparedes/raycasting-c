@@ -1,7 +1,7 @@
 #ifndef GUARD_level_hpp
 #define GUARD_level_hpp
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "player.hpp"
 #include "raycaster.hpp"

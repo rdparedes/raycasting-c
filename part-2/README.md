@@ -5,7 +5,7 @@
 If you are in Linux, just use `g++` by running
 
 ```
-make build
+make
 ```
 
 If using other OS, check out [this list](http://www.stroustrup.com/compilers.html) to find out what's the most appropriate compiler.
@@ -13,7 +13,7 @@ If using other OS, check out [this list](http://www.stroustrup.com/compilers.htm
 ## Run it
 
 ```
-./Raycast
+./bin/Raycast
 ```
 
 ---
