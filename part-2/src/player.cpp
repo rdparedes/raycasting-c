@@ -1,14 +1,18 @@
 #include "config.hpp"
 #include "trigonometry.hpp"
 #include "player.hpp"
+#include "sdlUtils.hpp"
 
 void Player::init(SDL_Renderer *renderer, const int &initialX, const int &initialY)
 {
-    SDL_Surface *surfaceLoader = IMG_Load("sprites/player.png");
-    _texture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
+    SDL_Surface *surfaceLoader = IMG_Load("sprites/player-marker.png");
+    _markerTexture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
+    _markerSpriteSize = getsize(_markerTexture);
+    _markerSpriteOffsetX = int(_markerSpriteSize.x / 2);
+    _markerSpriteOffsetY = int(_markerSpriteSize.y / 2);
     _rotation = Config::ANGLE0;
-    move(initialX, initialY);
+    teleport(initialX, initialY);
     calculateViewArea();
 }
 
@@ -33,6 +37,15 @@ void Player::calculateViewArea()
     _viewArea = {x, y, w, h};
 }
 
+
+void Player::updateMarkerRect()
+{
+    _markerRect = {position()->x - _markerSpriteOffsetX,
+                   position()->y - _markerSpriteOffsetY,
+                   _markerSpriteSize.x,
+                   _markerSpriteSize.y};
+}
+
 // Public methods
 
 const int &Player::rotation() const { return _rotation; }
@@ -42,7 +55,7 @@ const int &Player::rotation() const { return _rotation; }
  */
 const int Player::spriteRotation() const
 {
-    int temp = _rotation + Config::ANGLE90;
+    int temp = _rotation;
     if (temp > Config::ANGLE360)
     {
         temp -= Config::ANGLE360;
@@ -52,11 +65,11 @@ const int Player::spriteRotation() const
 
 const SDL_Point *Player::position() const { return &_position; }
 
-const SDL_Rect *Player::rectangle() const { return &_spriteRectangle; }
+const SDL_Rect *Player::markerRect() const { return &_markerRect; }
 
 const SDL_Rect *Player::viewArea() const { return &_viewArea; }
 
-SDL_Texture *Player::texture() const { return _texture; }
+SDL_Texture *Player::markerTexture() const { return _markerTexture; }
 
 void Player::rotateRight()
 {
@@ -76,23 +89,33 @@ void Player::rotateLeft()
     }
 }
 
-void Player::move(const int &x, const int &y)
+/**
+ *  \brief Teleport the player to x, y.
+ */
+void Player::teleport(const int &x, const int &y)
 {
-    _position = { x, y };
-    _spriteRectangle = {position()->x,
-                        position()->y,
-                        Config::SPRITE_SIZE,
-                        Config::SPRITE_SIZE};
+    _position = {x, y};
+    updateMarkerRect();
+}
+
+/**
+ *  \brief Move the player along directions x, y. If the body collides with another,
+ *  it will slide along the other body rather than stopping.
+ */
+void Player::moveAndSlide(const int &x, const int &y)
+{
+    _position = {position()->x + x, position()->y + y};
+    updateMarkerRect();
 }
 
 void Player::moveForward()
 {
-    move(position()->x + int(std::round(xDirection() * speed)), position()->y + int(std::round(yDirection() * speed)));
+    moveAndSlide(int(std::round(xDirection() * speed)), int(std::round(yDirection() * speed)));
     calculateViewArea();
 }
 
 void Player::moveBackwards()
 {
-    move(position()->x - int(std::round(xDirection() * speed)), position()->y - int(std::round(yDirection() * speed)));
+    moveAndSlide(-int(std::round(xDirection() * speed)), -int(std::round(yDirection() * speed)));
     calculateViewArea();
 }

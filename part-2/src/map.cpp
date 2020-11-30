@@ -29,6 +29,8 @@ const double Map::calculateDistance(const bool &isHorizontalCollision,
 
 // Public methods
 
+const std::vector<std::vector<char>> &Map::getMap() const { return _map; }
+
 const RayCollision *Map::checkSolidExists(const int &x,
                                           const int &y,
                                           const bool &isHorizontalCollision,

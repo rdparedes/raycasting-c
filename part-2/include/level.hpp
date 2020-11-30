@@ -11,9 +11,12 @@ class Level
     Player *_player;
     RayCaster *_rayCaster;
     SDL_Renderer *_renderer;
+    const Map *_map;
 
 public:
-    void init(SDL_Renderer *, RayCaster *);
+    bool shouldRenderMinimap = false;
+
+    void init(SDL_Renderer *, RayCaster *, const Map *);
     void render();
     Player *player() const;
 };

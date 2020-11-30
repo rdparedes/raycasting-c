@@ -41,17 +41,18 @@ int main(int argc, char *argv[])
     wall = new SolidObject();
     wall->init(renderer, "sprites/bricks.png");
     sampleMap->init({
-                        {'w', 'w', 'w', 'w', 'w', 'w', 'w'},
-                        {'w', '.', '.', '.', '.', '.', 'w'},
-                        {'w', '.', '.', '.', '.', '.', 'w'},
-                        {'w', '.', 'w', 'w', 'w', '.', 'w'},
-                        {'w', '.', '.', '.', '.', '.', 'w'},
-                        {'w', '.', '.', '.', '.', '.', 'w'},
-                        {'w', 'w', 'w', 'w', 'w', '.', 'w'},
+                        {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'.', 'w', '.', 'w', 'w', 'w', '.', 'w', '.', 'w'},
+                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'.', 'w', '.', '.', '.', '.', '.', '.', '.', 'w'},
+                        {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                     },
                     {{'w', wall}});
     rayCaster->init(sampleMap, renderer);
-    level->init(renderer, rayCaster);
+    level->init(renderer, rayCaster, sampleMap);
 
     runGame();
 
@@ -173,6 +174,13 @@ void runGame()
         {
             if (event.type == SDL_QUIT)
                 gameLoop = false;
+            else if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.scancode == SDL_SCANCODE_TAB)
+                {
+                    level->shouldRenderMinimap = !level->shouldRenderMinimap;
+                }
+            }
         }
 
         render();
