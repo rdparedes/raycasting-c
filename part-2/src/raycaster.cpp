@@ -76,7 +76,7 @@ const RayCollision *RayCaster::findHorizontalRayCollision(const SDL_Point *playe
     int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
     int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
 
-    const RayCollision *collision = _map->checkSolidExists(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
+    const RayCollision *collision = _map->getCollisionAt(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
 
     if (collision != NULL)
         return collision;
@@ -90,7 +90,7 @@ const RayCollision *RayCaster::findHorizontalRayCollision(const SDL_Point *playe
         int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
         int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
 
-        collision = _map->checkSolidExists(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
+        collision = _map->getCollisionAt(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
 
         if (collision != NULL)
         {
@@ -146,7 +146,7 @@ const RayCollision *RayCaster::findVerticalRayCollision(const SDL_Point *playerP
     int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
     int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
 
-    const RayCollision *collision = _map->checkSolidExists(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
+    const RayCollision *collision = _map->getCollisionAt(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
 
     if (collision != NULL)
     {
@@ -162,7 +162,7 @@ const RayCollision *RayCaster::findVerticalRayCollision(const SDL_Point *playerP
         int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
         int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
 
-        collision = _map->checkSolidExists(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
+        collision = _map->getCollisionAt(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
 
         if (collision != NULL)
         {
@@ -221,7 +221,7 @@ void RayCaster::castRays(const Player *player) const
 
     for (int rayIndex = 0; rayIndex != Config::screenSizeX; ++rayIndex)
     {
-        castSingleRay(player->position(), player->viewArea(), rayDegree, rayIndex);
+        castSingleRay(player->position(), player->view_area(), rayDegree, rayIndex);
         ++rayDegree;
         if (rayDegree >= Config::ANGLE360)
         {

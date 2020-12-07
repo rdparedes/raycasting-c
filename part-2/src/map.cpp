@@ -31,12 +31,12 @@ const double Map::calculateDistance(const bool &isHorizontalCollision,
 
 const std::vector<std::vector<char>> &Map::getMap() const { return _map; }
 
-const RayCollision *Map::checkSolidExists(const int &x,
-                                          const int &y,
-                                          const bool &isHorizontalCollision,
-                                          const SDL_Point *playerPosition,
-                                          double &intersection,
-                                          const int &rayDegree) const
+const RayCollision *Map::getCollisionAt(const int &x,
+                                        const int &y,
+                                        const bool &isHorizontalCollision,
+                                        const SDL_Point *playerPosition,
+                                        double &intersection,
+                                        const int &rayDegree) const
 {
     if (x < 0 || y < 0 || x >= _map.size() || y >= _map[0].size())
     {
@@ -53,4 +53,10 @@ const RayCollision *Map::checkSolidExists(const int &x,
         {.distance = calculateDistance(isHorizontalCollision, playerPosition, intersection, rayDegree),
          .offset = fmod(intersection, Config::SPRITE_SIZE),
          .object = getSolidObject(objectKey)});
+}
+
+bool Map::checkCollision(SDL_Rect a) const
+{
+    // TODO
+    return false;
 }

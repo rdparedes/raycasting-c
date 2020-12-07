@@ -20,7 +20,8 @@ class Map
 public:
     void init(const std::vector<std::vector<char>> &, const std::map<const char, SolidObject *> &);
     const std::vector<std::vector<char>> &getMap() const;
-    const RayCollision *checkSolidExists(const int &,
+    bool checkCollision(SDL_Rect) const;
+    const RayCollision *getCollisionAt(const int &,
                                          const int &,
                                          const bool &,
                                          const SDL_Point *,

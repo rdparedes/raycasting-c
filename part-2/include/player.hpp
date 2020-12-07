@@ -3,46 +3,51 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include "map.hpp"
 
 class Player
 {
-    int _rotation;
-    const int _viewDistance = 20;
+    const int kViewDistance = 20;
+    const int kSpeed = 6;
+    int rotation_;
 
     // Values to center the marker sprite when it's rendered
     int _markerSpriteOffsetX;
     int _markerSpriteOffsetY;
 
     // holds the position of the player
-    SDL_Point _position;
-    SDL_Rect _markerRect;
-    SDL_Rect _viewArea;
-    SDL_Texture *_markerTexture;
-    SDL_Point _markerSpriteSize;
+    SDL_Point position_;
+    SDL_Rect marker_rect_;
+    SDL_Rect view_area_;
+    SDL_Texture *marker_texture_;
+    SDL_Point marker_sprite_size_;
+    const Map *current_map_;
 
-    void calculateViewArea();
-    void updateMarkerRect();
-    const double &xDirection() const;
-    const double &yDirection() const;
+    void CalculateViewArea();
+    void UpdateMarkerRect();
+    const double &x_direction() const;
+    const double &y_direction() const;
 
 public:
-    const int speed = 6;
     const SDL_Point markerCenter = {8, 8};
 
-    void init(SDL_Renderer *, const int &, const int &);
+    void Init(const Map *, SDL_Renderer *, const int &, const int &);
+
     const int &rotation() const;
-    const int spriteRotation() const;
+    const int sprite_rotation() const;
     const SDL_Point *position() const;
-    const SDL_Rect *markerRect() const;
-    const SDL_Rect *markerRenderingRect() const;
-    const SDL_Rect *viewArea() const;
-    SDL_Texture *markerTexture() const;
-    void rotateRight();
-    void rotateLeft();
-    void teleport(const int &, const int &);
-    void moveAndSlide(const int &, const int &);
-    void moveForward();
-    void moveBackwards();
+    const SDL_Rect *collision_box() const;
+    const SDL_Rect *marker_rect() const;
+    const SDL_Rect *marker_rendering_rect() const;
+    const SDL_Rect *view_area() const;
+    SDL_Texture *marker_texture() const;
+
+    void RotateRight();
+    void RotateLeft();
+    void Teleport(const int &, const int &);
+    void MoveAndSlide(const int &, const int &);
+    void MoveForward();
+    void MoveBackwards();
 };
 
 #endif

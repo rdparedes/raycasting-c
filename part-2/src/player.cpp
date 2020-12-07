@@ -3,59 +3,61 @@
 #include "player.hpp"
 #include "sdlUtils.hpp"
 
-void Player::init(SDL_Renderer *renderer, const int &initialX, const int &initialY)
+void Player::Init(const Map *map, SDL_Renderer *renderer, const int &initialX, const int &initialY)
 {
     SDL_Surface *surfaceLoader = IMG_Load("sprites/player-marker.png");
-    _markerTexture = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
+    marker_texture_ = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
-    _markerSpriteSize = getsize(_markerTexture);
-    _markerSpriteOffsetX = int(_markerSpriteSize.x / 2);
-    _markerSpriteOffsetY = int(_markerSpriteSize.y / 2);
-    _rotation = Config::ANGLE0;
-    teleport(initialX, initialY);
-    calculateViewArea();
+    marker_sprite_size_ = getsize(marker_texture_);
+    _markerSpriteOffsetX = int(marker_sprite_size_.x / 2);
+    _markerSpriteOffsetY = int(marker_sprite_size_.y / 2);
+    rotation_ = Config::ANGLE0;
+    current_map_ = map;
+    Teleport(initialX, initialY);
+    CalculateViewArea();
 }
 
 // Private methods
 
-const double &Player::xDirection() const
+const double &Player::x_direction() const
 {
-    return Trigonometry::fCosTable[_rotation];
+    return Trigonometry::fCosTable[rotation_];
 }
 
-const double &Player::yDirection() const
+const double &Player::y_direction() const
 {
-    return Trigonometry::fSinTable[_rotation];
+    return Trigonometry::fSinTable[rotation_];
 }
 
-void Player::calculateViewArea()
+void Player::CalculateViewArea()
 {
-    int x = position()->x - (_viewDistance / 2 * Config::SPRITE_SIZE);
-    int y = position()->y - (_viewDistance / 2 * Config::SPRITE_SIZE);
-    int w = x + (_viewDistance * Config::SPRITE_SIZE);
-    int h = y + (_viewDistance * Config::SPRITE_SIZE);
-    _viewArea = {x, y, w, h};
+    int x = position()->x - (kViewDistance / 2 * Config::SPRITE_SIZE);
+    int y = position()->y - (kViewDistance / 2 * Config::SPRITE_SIZE);
+    int w = x + (kViewDistance * Config::SPRITE_SIZE);
+    int h = y + (kViewDistance * Config::SPRITE_SIZE);
+    view_area_ = {x, y, w, h};
 }
 
-
-void Player::updateMarkerRect()
+void Player::UpdateMarkerRect()
 {
-    _markerRect = {position()->x - _markerSpriteOffsetX,
+    marker_rect_ = {position()->x - _markerSpriteOffsetX,
                    position()->y - _markerSpriteOffsetY,
-                   _markerSpriteSize.x,
-                   _markerSpriteSize.y};
+                   marker_sprite_size_.x,
+                   marker_sprite_size_.y};
 }
 
 // Public methods
 
-const int &Player::rotation() const { return _rotation; }
+const int &Player::rotation() const { return rotation_; }
+
+const SDL_Rect *Player::collision_box() const { return &_collisionBox; }
 
 /**
- *  Returns _rotation minus ANGLE90 to account for mismatch between the sprite's rotation (90 deg) versus the player class initial rotation (ANGLE0)
+ *  Returns rotation_ minus ANGLE90 to account for mismatch between the sprite's rotation (90 deg) versus the player class initial rotation (ANGLE0)
  */
-const int Player::spriteRotation() const
+const int Player::sprite_rotation() const
 {
-    int temp = _rotation;
+    int temp = rotation_;
     if (temp > Config::ANGLE360)
     {
         temp -= Config::ANGLE360;
@@ -63,59 +65,69 @@ const int Player::spriteRotation() const
     return temp;
 }
 
-const SDL_Point *Player::position() const { return &_position; }
+const SDL_Point *Player::position() const { return &position_; }
 
-const SDL_Rect *Player::markerRect() const { return &_markerRect; }
+const SDL_Rect *Player::marker_rect() const { return &marker_rect_; }
 
-const SDL_Rect *Player::viewArea() const { return &_viewArea; }
+const SDL_Rect *Player::view_area() const { return &view_area_; }
 
-SDL_Texture *Player::markerTexture() const { return _markerTexture; }
+SDL_Texture *Player::marker_texture() const { return marker_texture_; }
 
-void Player::rotateRight()
+void Player::RotateRight()
 {
-    _rotation += Config::ANGLE5;
-    if (_rotation >= Config::ANGLE360)
+    rotation_ += Config::ANGLE5;
+    if (rotation_ >= Config::ANGLE360)
     {
-        _rotation -= Config::ANGLE360;
+        rotation_ -= Config::ANGLE360;
     }
 }
 
-void Player::rotateLeft()
+void Player::RotateLeft()
 {
-    _rotation -= Config::ANGLE5;
-    if (_rotation < Config::ANGLE0)
+    rotation_ -= Config::ANGLE5;
+    if (rotation_ < Config::ANGLE0)
     {
-        _rotation += Config::ANGLE360;
+        rotation_ += Config::ANGLE360;
     }
 }
 
 /**
  *  \brief Teleport the player to x, y.
  */
-void Player::teleport(const int &x, const int &y)
+void Player::Teleport(const int &x, const int &y)
 {
-    _position = {x, y};
-    updateMarkerRect();
+    position_ = {x, y};
+    UpdateMarkerRect();
 }
 
 /**
  *  \brief Move the player along directions x, y. If the body collides with another,
  *  it will slide along the other body rather than stopping.
  */
-void Player::moveAndSlide(const int &x, const int &y)
+void Player::MoveAndSlide(const int &x, const int &y)
 {
-    _position = {position()->x + x, position()->y + y};
-    updateMarkerRect();
+    int newX = position()->x + x;
+    int newY = position()->y + y;
+    if (current_map_->checkCollision({ newX, position()->y, boundingBox()->x, boundingBox()->y })) // TODO
+    {
+        newX = position()->x;
+    }
+    if (current_map_->checkCollision({ position()->x, newY, boundingBox()->x, boundingBox()->y }))
+    {
+        newY = position()->y;
+    }
+    position_ = {newX, newY};
+    UpdateMarkerRect();
 }
 
-void Player::moveForward()
+void Player::MoveForward()
 {
-    moveAndSlide(int(std::round(xDirection() * speed)), int(std::round(yDirection() * speed)));
-    calculateViewArea();
+    MoveAndSlide(int(std::round(x_direction() * kSpeed)), int(std::round(y_direction() * kSpeed)));
+    CalculateViewArea();
 }
 
-void Player::moveBackwards()
+void Player::MoveBackwards()
 {
-    moveAndSlide(-int(std::round(xDirection() * speed)), -int(std::round(yDirection() * speed)));
-    calculateViewArea();
+    MoveAndSlide(-int(std::round(x_direction() * kSpeed)), -int(std::round(y_direction() * kSpeed)));
+    CalculateViewArea();
 }

@@ -154,19 +154,19 @@ void runGame()
 
         if (keys[SDL_SCANCODE_UP])
         {
-            level->player()->moveForward();
+            level->player()->MoveForward();
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            level->player()->rotateRight();
+            level->player()->RotateRight();
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            level->player()->moveBackwards();
+            level->player()->MoveBackwards();
         }
         if (keys[SDL_SCANCODE_LEFT])
         {
-            level->player()->rotateLeft();
+            level->player()->RotateLeft();
         }
 
         SDL_Event event;

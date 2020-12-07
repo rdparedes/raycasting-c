@@ -51,17 +51,17 @@ double fYStepTable[ANGLE360 + 1];
 
 class Player
 {
-    int _rotation;
+    int rotation_;
     SDL_Rect spriteRectangle;
 
-    const double &xDirection() const
+    const double &x_direction() const
     {
-        return fCosTable[_rotation];
+        return fCosTable[rotation_];
     }
 
-    const double &yDirection() const
+    const double &y_direction() const
     {
-        return fSinTable[_rotation];
+        return fSinTable[rotation_];
     }
 
 public:
@@ -71,16 +71,16 @@ public:
         spriteRectangle.y = y;
         spriteRectangle.w = SPRITE_SIZE;
         spriteRectangle.h = SPRITE_SIZE;
-        _rotation = ANGLE0;
+        rotation_ = ANGLE0;
     }
 
     const int speed = 6;
 
-    const int &rotation() const { return _rotation; }
+    const int &rotation() const { return rotation_; }
 
-    const int spriteRotation() const
+    const int sprite_rotation() const
     {
-        int temp = _rotation + ANGLE90;
+        int temp = rotation_ + ANGLE90;
         if (temp > ANGLE360)
         {
             temp -= ANGLE360;
@@ -90,34 +90,34 @@ public:
 
     const SDL_Rect *rectangle() const { return &spriteRectangle; }
 
-    void rotateRight()
+    void RotateRight()
     {
-        _rotation += ANGLE5;
-        if (_rotation >= ANGLE360)
+        rotation_ += ANGLE5;
+        if (rotation_ >= ANGLE360)
         {
-            _rotation -= ANGLE360;
+            rotation_ -= ANGLE360;
         }
     }
 
-    void rotateLeft()
+    void RotateLeft()
     {
-        _rotation -= ANGLE5;
-        if (_rotation < ANGLE0)
+        rotation_ -= ANGLE5;
+        if (rotation_ < ANGLE0)
         {
-            _rotation += ANGLE360;
+            rotation_ += ANGLE360;
         }
     }
 
-    void moveForward()
+    void MoveForward()
     {
-        spriteRectangle.x += int(std::round(xDirection() * speed));
-        spriteRectangle.y += int(std::round(yDirection() * speed));
+        spriteRectangle.x += int(std::round(x_direction() * speed));
+        spriteRectangle.y += int(std::round(y_direction() * speed));
     }
 
-    void moveBackwards()
+    void MoveBackwards()
     {
-        spriteRectangle.x -= int(std::round(xDirection() * speed));
-        spriteRectangle.y -= int(std::round(yDirection() * speed));
+        spriteRectangle.x -= int(std::round(x_direction() * speed));
+        spriteRectangle.y -= int(std::round(y_direction() * speed));
     }
 };
 
@@ -162,7 +162,7 @@ void render()
     // Clear the window and make it all green
     SDL_RenderClear(renderer);
 
-    double playerAngle = floor(player->spriteRotation() / PROJECTION_TO_360_RATIO);
+    double playerAngle = floor(player->sprite_rotation() / PROJECTION_TO_360_RATIO);
 
     SDL_RenderCopyEx(
         renderer, playerTexture, NULL, player->rectangle(), playerAngle, &playerCenter, SDL_FLIP_NONE);
@@ -245,19 +245,19 @@ void runGame()
 
         if (keys[SDL_SCANCODE_UP])
         {
-            player->moveForward();
+            player->MoveForward();
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
-            player->rotateRight();
+            player->RotateRight();
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
-            player->moveBackwards();
+            player->MoveBackwards();
         }
         if (keys[SDL_SCANCODE_LEFT])
         {
-            player->rotateLeft();
+            player->RotateLeft();
         }
 
         SDL_Event event;
