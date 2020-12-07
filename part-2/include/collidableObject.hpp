@@ -6,13 +6,13 @@
 
 class CollidableObject
 {
-    SDL_Renderer *renderer_;
     SDL_Texture *texture_;
     SDL_Rect collision_box_;
 
 public:
-    void Init(SDL_Renderer *, const char *, const SDL_Rect &);
+    void Init(SDL_Texture *, const SDL_Rect &);
     SDL_Texture * texture() const;
     const SDL_Rect * collision_box() const;
+    void set_collision_box(const SDL_Rect &);
 };
 #endif

@@ -41,9 +41,9 @@ void Player::CalculateViewArea()
 void Player::UpdateMarkerRect()
 {
     sprite_rectangle_ = {position()->x - marker_sprite_offset_x_,
-                   position()->y - marker_sprite_offset_y_,
-                   marker_sprite_size_.x,
-                   marker_sprite_size_.y};
+                         position()->y - marker_sprite_offset_y_,
+                         marker_sprite_size_.x,
+                         marker_sprite_size_.y};
 }
 
 // Public methods
@@ -107,8 +107,8 @@ void Player::MoveAndSlide(const int &x, const int &y)
 {
     int new_x = position()->x + x;
     int new_y = position()->y + y;
-    SDL_Rect cb_new_x = { collision_box()->x + x, collision_box()->y, collision_box()->w, collision_box()->h };
-    SDL_Rect cb_new_y = { collision_box()->x, collision_box()->y + y, collision_box()->w, collision_box()->h };
+    SDL_Rect cb_new_x = {collision_box()->x + x, collision_box()->y, collision_box()->w, collision_box()->h};
+    SDL_Rect cb_new_y = {collision_box()->x, collision_box()->y + y, collision_box()->w, collision_box()->h};
 
     if (current_map_->CollisionExists(cb_new_x))
     {

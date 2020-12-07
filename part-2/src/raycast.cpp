@@ -22,8 +22,8 @@ void runGame();
 void render();
 void close();
 
-SDL_Texture *playerTexture;
-SDL_Surface *surfaceLoader;
+SDL_Texture *player_texture;
+SDL_Surface *wall_surface_loader;
 
 CollidableObject *wall;
 Map *sampleMap;
@@ -38,8 +38,14 @@ int main(int argc, char *argv[])
     sampleMap = new Map();
     level = new Level();
     rayCaster = new RayCaster();
+
     wall = new CollidableObject();
-    wall->Init(renderer, "sprites/bricks.png", { 0, 0, 0, 0}); // TODO
+    const char *wall_image_src = "sprites/bricks.png";
+    SDL_Surface *wall_surface_loader = IMG_Load(wall_image_src);
+    SDL_Texture *wall_texture = SDL_CreateTextureFromSurface(renderer, wall_surface_loader);
+    wall->Init(wall_texture, { 0, 0, 0, 0}); // TODO
+    SDL_FreeSurface(wall_surface_loader);
+
     sampleMap->Init({
                         {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                         {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
