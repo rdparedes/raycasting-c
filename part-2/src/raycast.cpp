@@ -7,7 +7,7 @@
 #include "level.hpp"
 #include "raycaster.hpp"
 #include "map.hpp"
-#include "solidObject.hpp"
+#include "collidableObject.hpp"
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -25,7 +25,7 @@ void close();
 SDL_Texture *playerTexture;
 SDL_Surface *surfaceLoader;
 
-SolidObject *wall;
+CollidableObject *wall;
 Map *sampleMap;
 Level *level;
 RayCaster *rayCaster;
@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
     sampleMap = new Map();
     level = new Level();
     rayCaster = new RayCaster();
-    wall = new SolidObject();
-    wall->init(renderer, "sprites/bricks.png");
-    sampleMap->init({
+    wall = new CollidableObject();
+    wall->Init(renderer, "sprites/bricks.png", { 0, 0, 0, 0}); // TODO
+    sampleMap->Init({
                         {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                         {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
                         {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},

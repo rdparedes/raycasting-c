@@ -7,26 +7,28 @@
 
 #include "trigonometry.hpp"
 #include "rayCollision.hpp"
-#include "solidObject.hpp"
+#include "collidableObject.hpp"
 
 class Map
 {
-    std::vector<std::vector<char>> _map;
-    std::map<const char, SolidObject *> _objectMap;
+    std::vector<std::vector<char>> encoded_map_;
+    std::map<const char, CollidableObject *> object_dictionary_;
+    std::vector<CollidableObject> collidable_objects_;
 
-    const SolidObject *getSolidObject(const char &) const;
-    const double calculateDistance(const bool &, const SDL_Point *, double &, const int &) const;
+    const CollidableObject *GetCollidableObject(const char &) const;
+    const double CalculateDistance(const bool &, const SDL_Point *, double &, const int &) const;
 
 public:
-    void init(const std::vector<std::vector<char>> &, const std::map<const char, SolidObject *> &);
-    const std::vector<std::vector<char>> &getMap() const;
-    bool checkCollision(SDL_Rect) const;
-    const RayCollision *getCollisionAt(const int &,
-                                         const int &,
-                                         const bool &,
-                                         const SDL_Point *,
-                                         double &,
-                                         const int &) const;
+    void Init(const std::vector<std::vector<char>> &, const std::map<const char, CollidableObject *> &);
+    const std::vector<std::vector<char>> &encoded_map() const;
+    const std::vector<CollidableObject> &collidable_objects() const;
+    bool CollisionExists(const SDL_Rect &) const;
+    const RayCollision *GetRayCollisionAt(const int &,
+                                       const int &,
+                                       const bool &,
+                                       const SDL_Point *,
+                                       double &,
+                                       const int &) const;
 };
 
 #endif

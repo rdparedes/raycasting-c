@@ -2,20 +2,21 @@
 
 const char EMPTY = '.';
 
-void Map::init(const std::vector<std::vector<char>> &map, const std::map<const char, SolidObject *> &objectMap)
+void Map::Init(const std::vector<std::vector<char>> &encoded_map, const std::map<const char, CollidableObject *> &object_dictionary)
 {
-    _map = map;
-    _objectMap = objectMap;
+    encoded_map_ = encoded_map;
+    object_dictionary_ = object_dictionary;
+    collidable_objects_ = {};
 }
 
 // Private methods
 
-const SolidObject *Map::getSolidObject(const char &key) const
+const CollidableObject *Map::GetCollidableObject(const char &key) const
 {
-    return _objectMap.at(key);
+    return object_dictionary_.at(key);
 }
 
-const double Map::calculateDistance(const bool &isHorizontalCollision,
+const double Map::CalculateDistance(const bool &isHorizontalCollision,
                                     const SDL_Point *playerPosition,
                                     double &intersection,
                                     const int &rayDegree) const
@@ -29,20 +30,20 @@ const double Map::calculateDistance(const bool &isHorizontalCollision,
 
 // Public methods
 
-const std::vector<std::vector<char>> &Map::getMap() const { return _map; }
+const std::vector<std::vector<char>> &Map::encoded_map() const { return encoded_map_; }
 
-const RayCollision *Map::getCollisionAt(const int &x,
-                                        const int &y,
-                                        const bool &isHorizontalCollision,
-                                        const SDL_Point *playerPosition,
-                                        double &intersection,
-                                        const int &rayDegree) const
+const RayCollision *Map::GetRayCollisionAt(const int &x,
+                                           const int &y,
+                                           const bool &isHorizontalCollision,
+                                           const SDL_Point *playerPosition,
+                                           double &intersection,
+                                           const int &rayDegree) const
 {
-    if (x < 0 || y < 0 || x >= _map.size() || y >= _map[0].size())
+    if (x < 0 || y < 0 || x >= encoded_map_.size() || y >= encoded_map_[0].size())
     {
         return NULL;
     }
-    const char objectKey = _map[x][y];
+    const char objectKey = encoded_map_[x][y];
 
     if (objectKey == EMPTY)
     {
@@ -50,13 +51,25 @@ const RayCollision *Map::getCollisionAt(const int &x,
     }
 
     return new RayCollision(
-        {.distance = calculateDistance(isHorizontalCollision, playerPosition, intersection, rayDegree),
+        {.distance = CalculateDistance(isHorizontalCollision, playerPosition, intersection, rayDegree),
          .offset = fmod(intersection, Config::SPRITE_SIZE),
-         .object = getSolidObject(objectKey)});
+         .object = GetCollidableObject(objectKey)});
 }
 
-bool Map::checkCollision(SDL_Rect a) const
+const std::vector<CollidableObject> &Map::collidable_objects() const
+{
+    return collidable_objects_;
+}
+
+bool Map::CollisionExists(const SDL_Rect &rect) const
 {
     // TODO
+    for (auto o : collidable_objects())
+    {
+        if (SDL_HasIntersection(&rect, o.collision_box()))
+        {
+            return true;
+        }
+    }
     return false;
 }

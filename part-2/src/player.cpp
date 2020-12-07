@@ -9,8 +9,8 @@ void Player::Init(const Map *map, SDL_Renderer *renderer, const int &initialX, c
     marker_texture_ = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
     marker_sprite_size_ = getsize(marker_texture_);
-    _markerSpriteOffsetX = int(marker_sprite_size_.x / 2);
-    _markerSpriteOffsetY = int(marker_sprite_size_.y / 2);
+    marker_sprite_offset_x_ = int(marker_sprite_size_.x / 2);
+    marker_sprite_offset_y_ = int(marker_sprite_size_.y / 2);
     rotation_ = Config::ANGLE0;
     current_map_ = map;
     Teleport(initialX, initialY);
@@ -40,8 +40,8 @@ void Player::CalculateViewArea()
 
 void Player::UpdateMarkerRect()
 {
-    marker_rect_ = {position()->x - _markerSpriteOffsetX,
-                   position()->y - _markerSpriteOffsetY,
+    sprite_rectangle_ = {position()->x - marker_sprite_offset_x_,
+                   position()->y - marker_sprite_offset_y_,
                    marker_sprite_size_.x,
                    marker_sprite_size_.y};
 }
@@ -50,7 +50,7 @@ void Player::UpdateMarkerRect()
 
 const int &Player::rotation() const { return rotation_; }
 
-const SDL_Rect *Player::collision_box() const { return &_collisionBox; }
+const SDL_Rect *Player::collision_box() const { return &sprite_rectangle_; }
 
 /**
  *  Returns rotation_ minus ANGLE90 to account for mismatch between the sprite's rotation (90 deg) versus the player class initial rotation (ANGLE0)
@@ -67,7 +67,7 @@ const int Player::sprite_rotation() const
 
 const SDL_Point *Player::position() const { return &position_; }
 
-const SDL_Rect *Player::marker_rect() const { return &marker_rect_; }
+const SDL_Rect *Player::sprite_rectangle() const { return &sprite_rectangle_; }
 
 const SDL_Rect *Player::view_area() const { return &view_area_; }
 
@@ -101,22 +101,24 @@ void Player::Teleport(const int &x, const int &y)
 }
 
 /**
- *  \brief Move the player along directions x, y. If the body collides with another,
- *  it will slide along the other body rather than stopping.
+ *  \brief Move the player to x, y. If the body collides, it will slide along the other body rather than stopping.
  */
 void Player::MoveAndSlide(const int &x, const int &y)
 {
-    int newX = position()->x + x;
-    int newY = position()->y + y;
-    if (current_map_->checkCollision({ newX, position()->y, boundingBox()->x, boundingBox()->y })) // TODO
+    int new_x = position()->x + x;
+    int new_y = position()->y + y;
+    SDL_Rect cb_new_x = { collision_box()->x + x, collision_box()->y, collision_box()->w, collision_box()->h };
+    SDL_Rect cb_new_y = { collision_box()->x, collision_box()->y + y, collision_box()->w, collision_box()->h };
+
+    if (current_map_->CollisionExists(cb_new_x))
     {
-        newX = position()->x;
+        new_x = position()->x;
     }
-    if (current_map_->checkCollision({ position()->x, newY, boundingBox()->x, boundingBox()->y }))
+    if (current_map_->CollisionExists(cb_new_y))
     {
-        newY = position()->y;
+        new_y = position()->y;
     }
-    position_ = {newX, newY};
+    position_ = {new_x, new_y};
     UpdateMarkerRect();
 }
 

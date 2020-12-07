@@ -12,12 +12,13 @@ class Player
     int rotation_;
 
     // Values to center the marker sprite when it's rendered
-    int _markerSpriteOffsetX;
-    int _markerSpriteOffsetY;
+    int marker_sprite_offset_x_;
+    int marker_sprite_offset_y_;
 
     // holds the position of the player
     SDL_Point position_;
-    SDL_Rect marker_rect_;
+
+    SDL_Rect sprite_rectangle_;
     SDL_Rect view_area_;
     SDL_Texture *marker_texture_;
     SDL_Point marker_sprite_size_;
@@ -37,7 +38,7 @@ public:
     const int sprite_rotation() const;
     const SDL_Point *position() const;
     const SDL_Rect *collision_box() const;
-    const SDL_Rect *marker_rect() const;
+    const SDL_Rect *sprite_rectangle() const;
     const SDL_Rect *marker_rendering_rect() const;
     const SDL_Rect *view_area() const;
     SDL_Texture *marker_texture() const;

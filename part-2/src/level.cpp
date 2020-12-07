@@ -19,7 +19,7 @@ void Level::render()
 
         // render the map's walls
         int i = 0;
-        for (auto &row : _map->getMap())
+        for (auto &row : _map->encoded_map())
         {
             int j = 0;
             for (auto &elem : row)
@@ -43,7 +43,7 @@ void Level::render()
             _renderer,
             _player->marker_texture(),
             NULL,
-            _player->marker_rect(),
+            _player->sprite_rectangle(),
             playerAngle,
             &_player->markerCenter,
             SDL_FLIP_NONE);
