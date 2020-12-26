@@ -1,14 +1,12 @@
-# Raycasting in C - Part 1
+# Raycasting in C - Part 2
 
 ## Building the project
 
-If you are in Linux, just use `g++` by running
+Compile by running
 
 ```
 make
 ```
-
-If using other OS, check out [this list](http://www.stroustrup.com/compilers.html) to find out what's the most appropriate compiler.
 
 ## Run it
 
