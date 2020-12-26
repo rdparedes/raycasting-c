@@ -1,8 +1,8 @@
 # TODO / Wishlist for this project
 
-- Add collisions
-- Floors
-- Ceilling
-- Higher ceillings
-- Polygon walls
-- First-person weapon
+- [x] Add collisions
+- [ ] Render floor textures
+- [ ] Render ceilling or skybox
+- [ ] Higher ceillings
+- [ ] Diagonal walls
+- [ ] First-person weapon
