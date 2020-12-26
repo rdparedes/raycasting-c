@@ -10,13 +10,13 @@ class Level
 {
     Player *_player;
     RayCaster *_rayCaster;
-    SDL_Renderer *_renderer;
-    const Map *_map;
+    SDL_Renderer *renderer_;
+    const Map *map_;
 
 public:
     bool shouldRenderMinimap = false;
 
-    void init(SDL_Renderer *, RayCaster *, const Map *);
+    void Init(SDL_Renderer *, RayCaster *, const Map *);
     void render();
     Player *player() const;
 };

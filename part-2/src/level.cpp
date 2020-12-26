@@ -1,13 +1,13 @@
 #include "config.hpp"
 #include "level.hpp"
 
-void Level::init(SDL_Renderer *renderer, RayCaster *rayCaster, const Map *map)
+void Level::Init(SDL_Renderer *renderer, RayCaster *rayCaster, const Map *map)
 {
-    _renderer = renderer;
+    renderer_ = renderer;
     _rayCaster = rayCaster;
     _player = new Player();
-    _map = map;
-    _player->Init(_map, _renderer, 96, 160);
+    map_ = map;
+    _player->Init(map_, renderer_, 96, 160);
 }
 
 void Level::render()
@@ -15,11 +15,11 @@ void Level::render()
     if (shouldRenderMinimap)
     {
         // wall color
-        SDL_SetRenderDrawColor(_renderer, 0, 128, 255, 1);
+        SDL_SetRenderDrawColor(renderer_, 0, 128, 255, 1);
 
         // render the map's walls
         int i = 0;
-        for (auto &row : _map->encoded_map())
+        for (auto &row : map_->encoded_map())
         {
             int j = 0;
             for (auto &elem : row)
@@ -27,7 +27,7 @@ void Level::render()
                 if (elem == 'w')
                 {
                     const SDL_Rect rect = {i * Config::SPRITE_SIZE, j * Config::SPRITE_SIZE, Config::SPRITE_SIZE, Config::SPRITE_SIZE};
-                    SDL_RenderDrawRect(_renderer, &rect);
+                    SDL_RenderDrawRect(renderer_, &rect);
                 }
                 ++j;
             }
@@ -35,12 +35,12 @@ void Level::render()
         }
 
         // black
-        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 0);
 
         // render the player's marker
         double playerAngle = floor(_player->sprite_rotation() / Config::PROJECTION_TO_360_RATIO);
         SDL_RenderCopyEx(
-            _renderer,
+            renderer_,
             _player->marker_texture(),
             NULL,
             _player->sprite_rectangle(),
@@ -51,7 +51,7 @@ void Level::render()
     else
     // Render 'projection' of what the player sees
     {
-        _rayCaster->castRays(_player);
+        _rayCaster->Cast(_player);
     }
 }
 

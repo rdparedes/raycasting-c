@@ -31,10 +31,10 @@ const double &Player::y_direction() const
 
 void Player::CalculateViewArea()
 {
-    int x = position()->x - (kViewDistance / 2 * Config::SPRITE_SIZE);
-    int y = position()->y - (kViewDistance / 2 * Config::SPRITE_SIZE);
-    int w = x + (kViewDistance * Config::SPRITE_SIZE);
-    int h = y + (kViewDistance * Config::SPRITE_SIZE);
+    int x = position()->x - (k_view_distance_ / 2 * Config::SPRITE_SIZE);
+    int y = position()->y - (k_view_distance_ / 2 * Config::SPRITE_SIZE);
+    int w = x + (k_view_distance_ * Config::SPRITE_SIZE);
+    int h = y + (k_view_distance_ * Config::SPRITE_SIZE);
     view_area_ = {x, y, w, h};
 }
 
@@ -124,12 +124,12 @@ void Player::MoveAndSlide(const int &x, const int &y)
 
 void Player::MoveForward()
 {
-    MoveAndSlide(int(std::round(x_direction() * kSpeed)), int(std::round(y_direction() * kSpeed)));
+    MoveAndSlide(int(std::round(x_direction() * k_speed_)), int(std::round(y_direction() * k_speed_)));
     CalculateViewArea();
 }
 
 void Player::MoveBackwards()
 {
-    MoveAndSlide(-int(std::round(x_direction() * kSpeed)), -int(std::round(y_direction() * kSpeed)));
+    MoveAndSlide(-int(std::round(x_direction() * k_speed_)), -int(std::round(y_direction() * k_speed_)));
     CalculateViewArea();
 }

@@ -47,18 +47,18 @@ int main(int argc, char *argv[])
     SDL_FreeSurface(wall_surface_loader);
 
     sampleMap->Init({
-                        {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
-                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
-                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
-                        {'.', 'w', '.', 'w', 'w', 'w', '.', 'w', '.', 'w'},
-                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
-                        {'.', 'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
-                        {'.', 'w', '.', '.', '.', '.', '.', '.', '.', 'w'},
-                        {'.', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+                        {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'w', '.', 'w', 'w', 'w', '.', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', '.', '.', 'w'},
+                        {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                     },
                     {{'w', wall}});
-    rayCaster->init(sampleMap, renderer);
-    level->init(renderer, rayCaster, sampleMap);
+    rayCaster->Init(sampleMap, renderer);
+    level->Init(renderer, rayCaster, sampleMap);
 
     runGame();
 

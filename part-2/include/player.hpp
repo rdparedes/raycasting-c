@@ -7,8 +7,8 @@
 
 class Player
 {
-    const int kViewDistance = 20;
-    const int kSpeed = 6;
+    const int k_view_distance_ = 20;
+    const int k_speed_ = 6;
     int rotation_;
 
     // Values to center the marker sprite when it's rendered
