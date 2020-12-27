@@ -2,7 +2,7 @@
 
 - [x] Add collisions
 - [ ] Render floor textures
-- [ ] Render ceilling or skybox
+- [x] Render skybox
 - [ ] Higher ceillings
 - [ ] Diagonal walls
 - [ ] First-person weapon

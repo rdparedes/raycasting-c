@@ -1,5 +1,7 @@
 # Raycasting in C - Part 2
 
+![./screenshot.PNG](./screenshot.PNG)
+
 ## Building the project
 
 Compile by running
