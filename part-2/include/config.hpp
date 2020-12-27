@@ -5,14 +5,14 @@
 
 namespace Config
 {
-const int screenSizeX = 640;
-const int screenSizeY = 400;
-const int xCenter = screenSizeX / 2;
-const int yCenter = screenSizeY / 2;
+const int screen_width = 640;
+const int screen_height = 400;
+const int xCenter = screen_width / 2;
+const int y_center = screen_height / 2;
 
 const int SPRITE_SIZE = 64;
 const int FOV = 60;
-const int ANGLE60 = screenSizeX;
+const int ANGLE60 = screen_width;
 const int ANGLE30 = floor(ANGLE60 / 2);
 const int ANGLE15 = floor(ANGLE30 / 2);
 const int ANGLE90 = ANGLE30 * 3;

@@ -4,19 +4,19 @@
 #include <SDL.h>
 
 #include "player.hpp"
-#include "raycaster.hpp"
+#include "renderer.hpp"
 
 class Level
 {
-    Player *_player;
-    RayCaster *_rayCaster;
-    SDL_Renderer *renderer_;
+    Player *player_;
+    SDL_Renderer *sdl_renderer_;
+    Renderer *renderer_;
     const Map *map_;
 
 public:
-    bool shouldRenderMinimap = false;
+    bool should_render_minimap = false;
 
-    void Init(SDL_Renderer *, RayCaster *, const Map *);
+    void Init(SDL_Renderer *, Renderer *, const Map *);
     void render();
     Player *player() const;
 };

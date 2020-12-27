@@ -8,9 +8,10 @@
 #include "raycaster.hpp"
 #include "map.hpp"
 #include "collidableObject.hpp"
+#include "renderer.hpp"
 
 SDL_Window *window;
-SDL_Renderer *renderer;
+SDL_Renderer *sdl_renderer;
 
 bool initEverything();
 bool initSDL();
@@ -26,27 +27,29 @@ SDL_Texture *player_texture;
 SDL_Surface *wall_surface_loader;
 
 CollidableObject *wall;
-Map *sampleMap;
+Map *sample_map;
 Level *level;
-RayCaster *rayCaster;
+Renderer *renderer;
+RayCaster *ray_caster;
 
 int main(int argc, char *argv[])
 {
     if (!initEverything())
         return -1;
 
-    sampleMap = new Map();
+    sample_map = new Map();
     level = new Level();
-    rayCaster = new RayCaster();
+    renderer = new Renderer();
+    ray_caster = new RayCaster();
 
     wall = new CollidableObject();
     const char *wall_image_src = "sprites/bricks.png";
     SDL_Surface *wall_surface_loader = IMG_Load(wall_image_src);
-    SDL_Texture *wall_texture = SDL_CreateTextureFromSurface(renderer, wall_surface_loader);
+    SDL_Texture *wall_texture = SDL_CreateTextureFromSurface(sdl_renderer, wall_surface_loader);
     wall->Init(wall_texture, { 0, 0, 0, 0}); // TODO
     SDL_FreeSurface(wall_surface_loader);
 
-    sampleMap->Init({
+    sample_map->Init({
                         {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                         {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
                         {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},
@@ -57,8 +60,9 @@ int main(int argc, char *argv[])
                         {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                     },
                     {{'w', wall}});
-    rayCaster->Init(sampleMap, renderer);
-    level->Init(renderer, rayCaster, sampleMap);
+    ray_caster->Init(sample_map, sdl_renderer);
+    renderer->Init(ray_caster, sdl_renderer);
+    level->Init(sdl_renderer, renderer, sample_map);
 
     runGame();
 
@@ -68,12 +72,12 @@ int main(int argc, char *argv[])
 void render()
 {
     // Clear the window
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(sdl_renderer);
 
     level->render();
 
     // Render changes
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(sdl_renderer);
 }
 
 bool initEverything()
@@ -117,8 +121,8 @@ bool createWindow()
         "Raycasting",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        Config::screenSizeX,
-        Config::screenSizeY,
+        Config::screen_width,
+        Config::screen_height,
         0);
 
     if (window == nullptr)
@@ -132,9 +136,9 @@ bool createWindow()
 
 bool createRenderer()
 {
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    sdl_renderer = SDL_CreateRenderer(window, -1, 0);
 
-    if (renderer == nullptr)
+    if (sdl_renderer == nullptr)
     {
         std::cout << "Failed to create renderer: " << SDL_GetError();
         return false;
@@ -145,9 +149,9 @@ bool createRenderer()
 
 void setupRenderer()
 {
-    SDL_RenderSetLogicalSize(renderer, Config::screenSizeX, Config::screenSizeY);
+    SDL_RenderSetLogicalSize(sdl_renderer, Config::screen_width, Config::screen_height);
     // Set renderer color to black
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 0);
 }
 
 void runGame()
@@ -184,7 +188,7 @@ void runGame()
             {
                 if (event.key.keysym.scancode == SDL_SCANCODE_TAB)
                 {
-                    level->shouldRenderMinimap = !level->shouldRenderMinimap;
+                    level->should_render_minimap = !level->should_render_minimap;
                 }
             }
         }
@@ -197,8 +201,8 @@ void runGame()
 
 void close()
 {
-    SDL_DestroyRenderer(renderer);
-    renderer = NULL;
+    SDL_DestroyRenderer(sdl_renderer);
+    sdl_renderer = NULL;
 
     SDL_DestroyWindow(window);
     window = NULL;

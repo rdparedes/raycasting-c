@@ -1,21 +1,21 @@
 #include "config.hpp"
 #include "level.hpp"
 
-void Level::Init(SDL_Renderer *renderer, RayCaster *rayCaster, const Map *map)
+void Level::Init(SDL_Renderer *sdl_renderer, Renderer *renderer, const Map *map)
 {
+    sdl_renderer_ = sdl_renderer;
     renderer_ = renderer;
-    _rayCaster = rayCaster;
-    _player = new Player();
+    player_ = new Player();
     map_ = map;
-    _player->Init(map_, renderer_, 96, 160);
+    player_->Init(map_, sdl_renderer_, 96, 160);
 }
 
 void Level::render()
 {
-    if (shouldRenderMinimap)
+    if (should_render_minimap)
     {
         // wall color
-        SDL_SetRenderDrawColor(renderer_, 0, 128, 255, 1);
+        SDL_SetRenderDrawColor(sdl_renderer_, 0, 128, 255, 1);
 
         // render the map's walls
         int i = 0;
@@ -27,7 +27,7 @@ void Level::render()
                 if (elem == 'w')
                 {
                     const SDL_Rect rect = {i * Config::SPRITE_SIZE, j * Config::SPRITE_SIZE, Config::SPRITE_SIZE, Config::SPRITE_SIZE};
-                    SDL_RenderDrawRect(renderer_, &rect);
+                    SDL_RenderDrawRect(sdl_renderer_, &rect);
                 }
                 ++j;
             }
@@ -35,24 +35,25 @@ void Level::render()
         }
 
         // black
-        SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(sdl_renderer_, 0, 0, 0, 0);
 
         // render the player's marker
-        double playerAngle = floor(_player->sprite_rotation() / Config::PROJECTION_TO_360_RATIO);
+        double playerAngle = floor(player_->sprite_rotation() / Config::PROJECTION_TO_360_RATIO);
         SDL_RenderCopyEx(
-            renderer_,
-            _player->marker_texture(),
+            sdl_renderer_,
+            player_->marker_texture(),
             NULL,
-            _player->sprite_rectangle(),
+            player_->sprite_rectangle(),
             playerAngle,
-            &_player->markerCenter,
+            &player_->markerCenter,
             SDL_FLIP_NONE);
     }
     else
-    // Render 'projection' of what the player sees
+    // Render projection
     {
-        _rayCaster->Cast(_player);
+        renderer_->DrawBackground();
+        renderer_->CallRayCaster(player_);
     }
 }
 
-Player *Level::player() const { return _player; }
+Player *Level::player() const { return player_; }

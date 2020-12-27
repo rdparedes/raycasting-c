@@ -15,7 +15,7 @@ void RayCaster::Init(const Map *map, SDL_Renderer *renderer)
 void RayCaster::CastSingleRay(const SDL_Point *playerPosition,
                               const SDL_Rect *playerViewArea,
                               const int &rayDegree,
-                              const int &rayIndex) const
+                              const int &ray_index) const
 {
     const RayCollision *horizontalRayCollision = FindHorizontalRayCollision(playerPosition,
                                                                             playerViewArea,
@@ -28,31 +28,43 @@ void RayCaster::CastSingleRay(const SDL_Point *playerPosition,
         return;
 
     if (horizontalRayCollision != NULL && verticalRayCollision == NULL)
-        Draw(horizontalRayCollision, rayIndex, rayDegree);
+        Draw(horizontalRayCollision, ray_index, rayDegree);
     else if (verticalRayCollision != NULL && horizontalRayCollision == NULL)
-        Draw(verticalRayCollision, rayIndex, rayDegree);
+        Draw(verticalRayCollision, ray_index, rayDegree);
     else
     {
         // Draw the ray which is closest to the player
         if (horizontalRayCollision->distance < verticalRayCollision->distance)
-            Draw(horizontalRayCollision, rayIndex, rayDegree);
+            Draw(horizontalRayCollision, ray_index, rayDegree);
         else
-            Draw(verticalRayCollision, rayIndex, rayDegree);
+            Draw(verticalRayCollision, ray_index, rayDegree);
     }
 }
 
 void RayCaster::Draw(const RayCollision *rayCollision,
-                        const int &rayIndex,
+                        const int &ray_index,
                         const int &rayDegree) const
 {
-    double correctedDistance = rayCollision->distance / Trigonometry::fFish[rayIndex];
-    double projectedSliceHeight = Config::SPRITE_SIZE * PROJECTION_PLANE_DISTANCE / correctedDistance;
+    double corrected_distance = rayCollision->distance / Trigonometry::fFish[ray_index];
+    double projected_wall_height = Config::SPRITE_SIZE * PROJECTION_PLANE_DISTANCE / corrected_distance;
+    double bottom_of_wall = Config::y_center + int(projected_wall_height * 0.5);
+    double top_of_wall = Config::y_center - int(projected_wall_height * 0.5);
+
+    if (bottom_of_wall >= Config::screen_height)
+    {
+        bottom_of_wall = Config::screen_height-1;
+    }
+    if (top_of_wall < 0)
+    {
+        top_of_wall = 0;
+    }
 
     // srcRect: part of the texture to be rendered in dstRect
     // dstRect: slice to be projected
     const SDL_Rect srcRect = {rayCollision->offset, 0, 1, Config::SPRITE_SIZE};
-    const SDL_Rect dstRect = {rayIndex, Config::yCenter - int(projectedSliceHeight / 2), 1, projectedSliceHeight};
+    const SDL_Rect dstRect = {ray_index, top_of_wall, 1, (bottom_of_wall - top_of_wall) + 1};
 
+    // Draw wall
     SDL_RenderCopy(
         renderer_,
         rayCollision->object->texture(),
@@ -219,9 +231,9 @@ void RayCaster::Cast(const Player *player) const
     if (rayDegree < 0)
         rayDegree += Config::ANGLE360;
 
-    for (int rayIndex = 0; rayIndex != Config::screenSizeX; ++rayIndex)
+    for (int ray_index = 0; ray_index != Config::screen_width; ++ray_index)
     {
-        CastSingleRay(player->position(), player->view_area(), rayDegree, rayIndex);
+        CastSingleRay(player->position(), player->view_area(), rayDegree, ray_index);
         ++rayDegree;
         if (rayDegree >= Config::ANGLE360)
         {
