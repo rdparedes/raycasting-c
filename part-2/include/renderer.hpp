@@ -1,7 +1,7 @@
 #ifndef GUARD_renderer_hpp
 #define GUARD_renderer_hpp
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "player.hpp"
 #include "map.hpp"
 #include "raycaster.hpp"

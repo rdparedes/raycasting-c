@@ -2,7 +2,7 @@
 #define GUARD_raycaster_hpp
 
 #include <vector>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <map>
 #include "player.hpp"
 #include "map.hpp"

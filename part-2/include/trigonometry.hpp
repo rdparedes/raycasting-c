@@ -1,6 +1,7 @@
 #ifndef GUARD_trigonometry_hpp
 #define GUARD_trigonometry_hpp
 
+#include <cmath>
 #include "config.hpp"
 
 namespace Trigonometry

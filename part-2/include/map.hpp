@@ -1,7 +1,7 @@
 #ifndef GUARD_map_hpp
 #define GUARD_map_hpp
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <vector>
 #include <map>
 

@@ -1,7 +1,7 @@
 #ifndef GUARD_level_hpp
 #define GUARD_level_hpp
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "player.hpp"
 #include "renderer.hpp"
