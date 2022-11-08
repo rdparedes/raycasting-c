@@ -9,6 +9,7 @@
 #include "map.hpp"
 #include "collidableObject.hpp"
 #include "renderer.hpp"
+#include "filesystem"
 
 SDL_Window *window;
 SDL_Renderer *sdl_renderer;
@@ -43,12 +44,11 @@ int main(int argc, char *argv[])
     ray_caster = new RayCaster();
 
     wall = new CollidableObject();
-    const char *wall_image_src = "sprites/bricks.png";
-    SDL_Surface *wall_surface_loader = IMG_Load(wall_image_src);
+    const std::string wall_image_src = "../sprites/bricks.png";
+    SDL_Surface *wall_surface_loader = IMG_Load(wall_image_src.c_str());
     SDL_Texture *wall_texture = SDL_CreateTextureFromSurface(sdl_renderer, wall_surface_loader);
     wall->Init(wall_texture, { 0, 0, 0, 0}); // TODO
     SDL_FreeSurface(wall_surface_loader);
-
     sample_map->Init({
                         {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                         {'w', '.', '.', '.', '.', '.', 'w', '.', 'w'},

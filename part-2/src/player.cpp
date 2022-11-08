@@ -5,7 +5,7 @@
 
 void Player::Init(const Map *map, SDL_Renderer *renderer, const int &initialX, const int &initialY)
 {
-    SDL_Surface *surfaceLoader = IMG_Load("sprites/player-marker.png");
+    SDL_Surface *surfaceLoader = IMG_Load("../sprites/player-marker.png");
     marker_texture_ = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
     marker_sprite_size_ = getsize(marker_texture_);

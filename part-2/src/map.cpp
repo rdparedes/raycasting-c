@@ -1,28 +1,34 @@
 #include "map.hpp"
+#include <map>
+#include <iostream>
 
 const char EMPTY = '.';
 
 void Map::Init(const std::vector<std::vector<char>> &encoded_map, const std::map<const char, CollidableObject *> &object_dictionary)
 {
     encoded_map_ = encoded_map;
-    object_dictionary_ = object_dictionary;
+    object_dictionary_ = std::map(object_dictionary);
     const auto tile_size = Config::SPRITE_SIZE;
 
     int i = 0;
-    for (auto &row : encoded_map_)
-    {
-        int j = 0;
-        for (auto &elem : row)
+    try {
+        for (auto &row : encoded_map_)
         {
-            if (elem == 'w')
+            int j = 0;
+            for (auto &elem : row)
             {
-                CollidableObject *collidable = new CollidableObject(*GetCollidableObjectAt('w'));
-                collidable->set_collision_box({i * tile_size, j * tile_size, tile_size, tile_size});
-                collidable_objects_.push_back(collidable);
+                if (elem == 'w')
+                {
+                        CollidableObject *collidable = new CollidableObject(*GetCollidableObjectAt('w'));
+                        collidable->set_collision_box({i * tile_size, j * tile_size, tile_size, tile_size});
+                        collidable_objects_.push_back(collidable);
+                }
+                ++j;
             }
-            ++j;
+            ++i;
         }
-        ++i;
+    } catch (const std::exception& e) {
+        std::cout << "Could not render objects inside the Map: " << e.what();
     }
 }
 

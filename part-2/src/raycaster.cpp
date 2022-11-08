@@ -61,8 +61,8 @@ void RayCaster::Draw(const RayCollision *rayCollision,
 
     // srcRect: part of the texture to be rendered in dstRect
     // dstRect: slice to be projected
-    const SDL_Rect srcRect = {rayCollision->offset, 0, 1, Config::SPRITE_SIZE};
-    const SDL_Rect dstRect = {ray_index, top_of_wall, 1, (bottom_of_wall - top_of_wall) + 1};
+    const SDL_Rect srcRect = {int(rayCollision->offset), 0, 1, Config::SPRITE_SIZE};
+    const SDL_Rect dstRect = {ray_index, int(top_of_wall), 1, int(bottom_of_wall - top_of_wall) + 1};
 
     // Draw wall
     SDL_RenderCopy(
