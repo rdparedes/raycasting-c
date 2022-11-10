@@ -65,7 +65,8 @@
         "deque": "cpp",
         "iomanip": "cpp",
         "stack": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__availability": "cpp"
     },
     "makefile.configurations": [
         {

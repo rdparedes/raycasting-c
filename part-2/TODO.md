@@ -2,7 +2,7 @@
 
 - [x] Add collisions
 - [x] Render skybox
-- [ ] Fix weird visual bug when player gets too close to objects
+- [x] Fix weird visual bug when player gets too close to objects
 - [ ] Render floor textures
 - [ ] Higher walls
 - [ ] Diagonal walls
