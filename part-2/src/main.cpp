@@ -162,19 +162,19 @@ void runGame()
     {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-        if (keys[SDL_SCANCODE_UP])
+        if (keys[SDL_SCANCODE_W])
         {
             level->player()->MoveForward();
         }
-        if (keys[SDL_SCANCODE_RIGHT])
+        if (keys[SDL_SCANCODE_D])
         {
             level->player()->RotateRight();
         }
-        if (keys[SDL_SCANCODE_DOWN])
+        if (keys[SDL_SCANCODE_S])
         {
             level->player()->MoveBackwards();
         }
-        if (keys[SDL_SCANCODE_LEFT])
+        if (keys[SDL_SCANCODE_A])
         {
             level->player()->RotateLeft();
         }

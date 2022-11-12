@@ -1,13 +1,15 @@
+.PHONY: clean build
+
 PROGRAM = Raycast
 
 CC := g++
-CXXFLAGS=-std=c++11
+CXXFLAGS=-std=c++17
 LDFLAGS=-L/opt/homebrew/lib
 LDLIBS=-lm
 SRCDIR := src
 BUILDDIR := build
 TARGET := bin
-PLATFORM ?= win
+PLATFORM ?= osx # options: osx, win
 
 SOURCES := $(shell find $(SRCDIR) -type f -name *.cpp)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%, $(SOURCES:.cpp=.o ))
@@ -20,10 +22,12 @@ RM_R := rm -r
 RM := rm
 OUTDIR := $(TARGET)/$(PROGRAM)
 
-all: $(OUTDIR)
+all: clean $(OUTDIR)
+
+build: $(OUTDIR)
 
 $(OUTDIR): $(OBJECTS)
-	@echo " Linking...";
+	@echo "Linking files...";
 	@mkdir -p $(TARGET);
 ifeq ($(PLATFORM),osx)
 	$(CC) $(CXXFLAGS) $(OSX_INCLUDES) $(LDFLAGS) $(LDLIBS) $^ -o $(OUTDIR) $(LIBS)

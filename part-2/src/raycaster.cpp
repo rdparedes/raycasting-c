@@ -64,8 +64,8 @@ void RayCaster::Draw(const RayCollision *rayCollision,
     int color = 255 - int(corrected_distance / 450) * 255;
     if (color > 255)
         color = 255;
-    if (color < 20)
-        color = 20;
+    if (color < 60)
+        color = 60;
     const Uint8 r = color;
     const Uint8 g = color;
     const Uint8 b = color;
