@@ -27,25 +27,42 @@ void RayCaster::CastSingleRay(const SDL_Point *playerPosition,
     if (horizontalRayCollision == NULL && verticalRayCollision == NULL)
         return;
 
+    bool isVerticalCollision;
     if (horizontalRayCollision != NULL && verticalRayCollision == NULL)
-        Draw(horizontalRayCollision, ray_index, rayDegree);
+        isVerticalCollision = false;
     else if (verticalRayCollision != NULL && horizontalRayCollision == NULL)
-        Draw(verticalRayCollision, ray_index, rayDegree);
+        isVerticalCollision = true;
     else
     {
         // Draw the ray which is closest to the player
         if (horizontalRayCollision->distance < verticalRayCollision->distance)
-            Draw(horizontalRayCollision, ray_index, rayDegree);
+            isVerticalCollision = false;
         else
-            Draw(verticalRayCollision, ray_index, rayDegree);
+            isVerticalCollision = true;
+    }
+
+    if (isVerticalCollision) {
+        DrawWallSlice(verticalRayCollision, ray_index, rayDegree, 180);
+    } else {
+        DrawWallSlice(horizontalRayCollision, ray_index, rayDegree, 120);
     }
 }
 
-void RayCaster::Draw(const RayCollision *rayCollision,
+void RayCaster::DrawWallSlice(const RayCollision *rayCollision,
                      const int &ray_index,
-                     const int &rayDegree) const
+                     const int &rayDegree,
+                     const int &light_value) const
 {
     double corrected_distance = rayCollision->distance / Trigonometry::fFish[ray_index];
+    const double brightnessLevel = light_value / floor(corrected_distance);
+    double intensity = 1.3;
+    if (corrected_distance > 600) {
+        intensity = 1;
+    } else if (corrected_distance > 900) {
+        intensity = 0.75;
+    } else if (corrected_distance > 1200) {
+        intensity = 0.5;
+    }
     double projected_wall_height = Config::SPRITE_SIZE * PROJECTION_PLANE_DISTANCE / corrected_distance;
     double bottom_of_wall = Config::y_center + int(projected_wall_height * 0.5);
     double top_of_wall = Config::y_center - int(projected_wall_height * 0.5);
@@ -55,13 +72,9 @@ void RayCaster::Draw(const RayCollision *rayCollision,
     // dstRect: slice to be projected on screen
     const SDL_Rect dstRect = {ray_index, int(top_of_wall), 1, int(bottom_of_wall - top_of_wall) + 1};
 
-    /** TODO: Instead of this cheap ass shading, implement something cooler. Read this:
-     *   - https://permadi.com/1996/05/ray-casting-tutorial-19/#SHADING
-     *   - https://permadi.com/tutorial/raycast/demo/3/
-     */
-
     // Draw wall
-    int color = 255 - int(corrected_distance / 450) * 255;
+    int color = 255 * brightnessLevel * intensity;
+
     if (color > 255)
         color = 255;
     if (color < 60)
@@ -69,9 +82,7 @@ void RayCaster::Draw(const RayCollision *rayCollision,
     const Uint8 r = color;
     const Uint8 g = color;
     const Uint8 b = color;
-    // Uint8 a = 255;
     SDL_SetTextureColorMod(rayCollision->object->texture(), r, g, b);
-    // SDL_SetTextureAlphaMod(rayCollision->object->texture(), a);
     SDL_RenderCopy(
         renderer_,
         rayCollision->object->texture(),

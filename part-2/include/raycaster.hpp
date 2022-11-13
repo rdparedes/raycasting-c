@@ -14,7 +14,7 @@ class RayCaster
     SDL_Renderer *renderer_;
 
     void CastSingleRay(const SDL_Point *, const SDL_Rect *, const int &, const int &) const;
-    void Draw(const RayCollision *, const int &, const int &) const;
+    void DrawWallSlice(const RayCollision *, const int &, const int &, const int &) const;
 
     const RayCollision *FindHorizontalRayCollision(const SDL_Point *, const SDL_Rect *, const int &) const;
     double FindFirstHIntersectionX(const int &, const SDL_Point *, const double &) const;
