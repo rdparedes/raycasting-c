@@ -8,9 +8,9 @@ void Player::Init(const Map *map, SDL_Renderer *renderer, const int &initialX, c
     SDL_Surface *surfaceLoader = IMG_Load("../sprites/player-marker.png");
     marker_texture_ = SDL_CreateTextureFromSurface(renderer, surfaceLoader);
     SDL_FreeSurface(surfaceLoader);
-    marker_sprite_size_ = getsize(marker_texture_);
-    marker_sprite_offset_x_ = int(marker_sprite_size_.x / 2);
-    marker_sprite_offset_y_ = int(marker_sprite_size_.y / 2);
+    minimap_sprite_size_ = getsize(marker_texture_);
+    minimap_sprite_offset_x_ = int(minimap_sprite_size_.x / 2);
+    minimap_sprite_offset_y_ = int(minimap_sprite_size_.y / 2);
     rotation_ = Config::ANGLE0;
     current_map_ = map;
     Teleport(initialX, initialY);
@@ -38,19 +38,19 @@ void Player::CalculateViewArea()
     view_area_ = {x, y, w, h};
 }
 
-void Player::UpdateMarkerRect()
+void Player::UpdateMinimapPosition()
 {
-    sprite_rectangle_ = {position()->x - marker_sprite_offset_x_,
-                         position()->y - marker_sprite_offset_y_,
-                         marker_sprite_size_.x,
-                         marker_sprite_size_.y};
+    minimap_sprite_rectangle_ = {position()->x - minimap_sprite_offset_x_,
+                                 position()->y - minimap_sprite_offset_y_,
+                                 minimap_sprite_size_.x,
+                                 minimap_sprite_size_.y};
 }
 
 // Public methods
 
 const int &Player::rotation() const { return rotation_; }
 
-const SDL_Rect *Player::collision_box() const { return &sprite_rectangle_; }
+const SDL_Rect *Player::collision_box() const { return &minimap_sprite_rectangle_; }
 
 /**
  *  Returns rotation_ minus ANGLE90 to account for mismatch between the sprite's rotation (90 deg) versus the player class initial rotation (ANGLE0)
@@ -67,7 +67,7 @@ const int Player::sprite_rotation() const
 
 const SDL_Point *Player::position() const { return &position_; }
 
-const SDL_Rect *Player::sprite_rectangle() const { return &sprite_rectangle_; }
+const SDL_Rect *Player::minimap_rectangle() const { return &minimap_sprite_rectangle_; }
 
 const SDL_Rect *Player::view_area() const { return &view_area_; }
 
@@ -97,7 +97,7 @@ void Player::RotateLeft()
 void Player::Teleport(const int &x, const int &y)
 {
     position_ = {x, y};
-    UpdateMarkerRect();
+    UpdateMinimapPosition();
 }
 
 /**
@@ -119,7 +119,7 @@ void Player::MoveAndSlide(const int &x, const int &y)
         new_y = position()->y;
     }
     position_ = {new_x, new_y};
-    UpdateMarkerRect();
+    UpdateMinimapPosition();
 }
 
 void Player::MoveForward()

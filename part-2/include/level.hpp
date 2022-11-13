@@ -14,8 +14,6 @@ class Level
     const Map *map_;
 
 public:
-    bool should_render_minimap = false;
-
     void Init(SDL_Renderer *, Renderer *, const Map *);
     void render();
     Player *player() const;

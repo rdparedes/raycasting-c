@@ -5,6 +5,7 @@
 #include "config.hpp"
 #include "player.hpp"
 #include "level.hpp"
+#include "minimap.hpp"
 #include "raycaster.hpp"
 #include "map.hpp"
 #include "collidableObject.hpp"
@@ -13,6 +14,8 @@
 
 SDL_Window *window;
 SDL_Renderer *sdl_renderer;
+SDL_Rect game_viewport;
+SDL_Rect minimap_viewport;
 
 bool initEverything();
 bool initSDL();
@@ -32,6 +35,7 @@ Map *sample_map;
 Level *level;
 Renderer *renderer;
 RayCaster *ray_caster;
+Minimap *minimap;
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +46,16 @@ int main(int argc, char *argv[])
     level = new Level();
     renderer = new Renderer();
     ray_caster = new RayCaster();
+    minimap = new Minimap();
+
+    game_viewport.x = 0;
+    game_viewport.y = 0;
+    game_viewport.w = Config::game_width;
+    game_viewport.h = Config::game_height;
+    minimap_viewport.x = Config::game_width + 16;
+    minimap_viewport.y = int(Config::y_center - (Config::minimap_height / 2));
+    minimap_viewport.w = Config::minimap_width;
+    minimap_viewport.h = Config::minimap_height;
 
     wall = new CollidableObject();
     const std::string wall_image_src = "../sprites/bricks.png";
@@ -57,12 +71,17 @@ int main(int argc, char *argv[])
                         {'w', '.', '.', '.', '.', '.', 'w', '.', 'w', '.', 'w', '.', 'w'},
                         {'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'},
                         {'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', 'w', '.', 'w', '.', 'w', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'},
+                        {'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'},
                         {'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'},
                     },
                     {{'w', wall}});
     ray_caster->Init(sample_map, sdl_renderer);
     renderer->Init(ray_caster, sdl_renderer);
     level->Init(sdl_renderer, renderer, sample_map);
+    minimap->Init(sdl_renderer, renderer, level->player(), sample_map);
 
     runGame();
 
@@ -74,7 +93,10 @@ void render()
     // Clear the window
     SDL_RenderClear(sdl_renderer);
 
+    SDL_RenderSetViewport(sdl_renderer, &game_viewport);
     level->render();
+    SDL_RenderSetViewport(sdl_renderer, &minimap_viewport);
+    minimap->render();
 
     // Render changes
     SDL_RenderPresent(sdl_renderer);
@@ -121,8 +143,8 @@ bool createWindow()
         "Raycasting",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        Config::screen_width,
-        Config::screen_height,
+        Config::window_width,
+        Config::window_height,
         0);
 
     if (window == nullptr)
@@ -149,7 +171,7 @@ bool createRenderer()
 
 void setupRenderer()
 {
-    SDL_RenderSetLogicalSize(sdl_renderer, Config::screen_width, Config::screen_height);
+    SDL_RenderSetLogicalSize(sdl_renderer, Config::window_width, Config::window_height);
     // Set renderer color to black
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 0);
 }
@@ -188,7 +210,7 @@ void runGame()
             {
                 if (event.key.keysym.scancode == SDL_SCANCODE_TAB)
                 {
-                    level->should_render_minimap = !level->should_render_minimap;
+                    // Do things with the tab button
                 }
             }
         }

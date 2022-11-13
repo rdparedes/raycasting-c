@@ -10,17 +10,17 @@ void Renderer::DrawBackground()
 {
     int color_variant = 255;
 
-    for (int y = 0; y < (Config::screen_height * 0.5); ++y)
+    for (int y = 0; y < (Config::game_height * 0.5); ++y)
     {
         SDL_SetRenderDrawColor(sdl_renderer_, color_variant, 125, 255, 1);
-        SDL_RenderDrawLine(sdl_renderer_, 0, y, Config::screen_width, y);
+        SDL_RenderDrawLine(sdl_renderer_, 0, y, Config::game_width, y);
         --color_variant;
     }
 
     SDL_SetRenderDrawColor(sdl_renderer_, 99, 99, 99, 1);
-    for (int y = (Config::screen_height * 0.5); y < Config::screen_height; ++y)
+    for (int y = (Config::game_height * 0.5); y < Config::game_height; ++y)
     {
-        SDL_RenderDrawLine(sdl_renderer_, 0, y, Config::screen_width, y);
+        SDL_RenderDrawLine(sdl_renderer_, 0, y, Config::game_width, y);
     }
 
     SDL_SetRenderDrawColor(sdl_renderer_, 0, 0, 0, 0);

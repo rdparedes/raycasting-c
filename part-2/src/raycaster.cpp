@@ -238,7 +238,7 @@ void RayCaster::Cast(const Player *player) const
     if (rayDegree < 0)
         rayDegree += Config::ANGLE360;
 
-    for (int ray_index = 0; ray_index != Config::screen_width; ++ray_index)
+    for (int ray_index = 0; ray_index != Config::game_width; ++ray_index)
     {
         CastSingleRay(player->position(), player->view_area(), rayDegree, ray_index);
         ++rayDegree;

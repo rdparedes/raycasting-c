@@ -5,14 +5,18 @@
 
 namespace Config
 {
-const int screen_width = 640;
-const int screen_height = 400;
-const int xCenter = screen_width / 2;
-const int y_center = screen_height / 2;
+const int game_width = 640;
+const int game_height = 400;
+const int minimap_width = 320;
+const int minimap_height = 240;
+const int window_width = game_width + minimap_width + 16;
+const int window_height = game_height;
+const int xCenter = game_width / 2;
+const int y_center = game_height / 2;
 
 const int SPRITE_SIZE = 64;
 const int FOV = 60;
-const int ANGLE60 = screen_width;
+const int ANGLE60 = game_width;
 const int ANGLE30 = floor(ANGLE60 / 2);
 const int ANGLE15 = floor(ANGLE30 / 2);
 const int ANGLE90 = ANGLE30 * 3;

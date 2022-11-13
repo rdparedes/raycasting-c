@@ -11,21 +11,22 @@ class Player
     const int k_speed_ = 6;
     int rotation_;
 
-    // Values to center the marker sprite when it's rendered
-    int marker_sprite_offset_x_;
-    int marker_sprite_offset_y_;
+    // Centers the marker sprite (x coordinate) when it's rendered
+    int minimap_sprite_offset_x_;
+    // Centers the marker sprite (y coordinate) when it's rendered
+    int minimap_sprite_offset_y_;
 
     // holds the position of the player
     SDL_Point position_;
 
-    SDL_Rect sprite_rectangle_;
+    SDL_Rect minimap_sprite_rectangle_;
     SDL_Rect view_area_;
     SDL_Texture *marker_texture_;
-    SDL_Point marker_sprite_size_;
+    SDL_Point minimap_sprite_size_;
     const Map *current_map_;
 
     void CalculateViewArea();
-    void UpdateMarkerRect();
+    void UpdateMinimapPosition();
     const double &x_direction() const;
     const double &y_direction() const;
 
@@ -38,7 +39,7 @@ public:
     const int sprite_rotation() const;
     const SDL_Point *position() const;
     const SDL_Rect *collision_box() const;
-    const SDL_Rect *sprite_rectangle() const;
+    const SDL_Rect *minimap_rectangle() const;
     const SDL_Rect *marker_rendering_rect() const;
     const SDL_Rect *view_area() const;
     SDL_Texture *marker_texture() const;
