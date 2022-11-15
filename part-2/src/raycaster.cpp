@@ -2,78 +2,107 @@
 #include "trigonometry.hpp"
 #include "raycaster.hpp"
 
-const double PROJECTION_PLANE_DISTANCE = floor(Config::xCenter / tan(Trigonometry::degToRad(Config::FOV / 2.0)));
+const double kProjectionPlaneDistance = floor(Config::xCenter / tan(Trigonometry::DegToRad(Config::FOV / 2.0)));
+const char *kFloorImageSrc = "../sprites/floor.png";
 
 void RayCaster::Init(const Map *map, SDL_Renderer *renderer)
 {
     map_ = map;
     renderer_ = renderer;
+    SDL_Surface *floor_surface_loader = IMG_Load(kFloorImageSrc);
+    SDL_Texture *floor_texture = SDL_CreateTextureFromSurface(renderer_, floor_surface_loader);
+    SDL_FreeSurface(floor_surface_loader);
 }
 
 // Private methods
 
-void RayCaster::CastSingleRay(const SDL_Point *playerPosition,
-                              const SDL_Rect *playerViewArea,
-                              const int &rayDegree,
+void RayCaster::CastSingleRay(const Player *player,
+                              const int &ray_degree,
                               const int &ray_index) const
 {
-    const RayCollision *horizontalRayCollision = FindHorizontalRayCollision(playerPosition,
-                                                                            playerViewArea,
-                                                                            rayDegree);
-    const RayCollision *verticalRayCollision = FindVerticalRayCollision(playerPosition,
-                                                                        playerViewArea,
-                                                                        rayDegree);
+    const RayCollision *horizontal_ray_collision = FindHorizontalRayCollision(player,
+                                                                              ray_degree);
+    const RayCollision *vertical_ray_collision = FindVerticalRayCollision(player,
+                                                                          ray_degree);
 
-    if (horizontalRayCollision == NULL && verticalRayCollision == NULL)
+    if (horizontal_ray_collision == NULL && vertical_ray_collision == NULL)
         return;
 
-    bool isVerticalCollision;
-    if (horizontalRayCollision != NULL && verticalRayCollision == NULL)
-        isVerticalCollision = false;
-    else if (verticalRayCollision != NULL && horizontalRayCollision == NULL)
-        isVerticalCollision = true;
+    bool is_vertical_collision;
+    if (horizontal_ray_collision != NULL && vertical_ray_collision == NULL)
+        is_vertical_collision = false;
+    else if (vertical_ray_collision != NULL && horizontal_ray_collision == NULL)
+        is_vertical_collision = true;
     else
     {
         // Draw the ray which is closest to the player
-        if (horizontalRayCollision->distance < verticalRayCollision->distance)
-            isVerticalCollision = false;
+        if (horizontal_ray_collision->distance < vertical_ray_collision->distance)
+            is_vertical_collision = false;
         else
-            isVerticalCollision = true;
+            is_vertical_collision = true;
     }
 
-    if (isVerticalCollision) {
-        DrawWallSlice(verticalRayCollision, ray_index, rayDegree, 180);
-    } else {
-        DrawWallSlice(horizontalRayCollision, ray_index, rayDegree, 120);
+    int light_value;
+    const RayCollision *ray_collision;
+
+    if (is_vertical_collision)
+    {
+        light_value = 180;
+        ray_collision = vertical_ray_collision;
     }
+    else
+    {
+        light_value = 120;
+        ray_collision = horizontal_ray_collision;
+    }
+
+    const double corrected_distance = ray_collision->distance / Trigonometry::fFish[ray_index];
+    const double brightness_level = light_value / floor(corrected_distance);
+    const double projected_wall_height = Config::SPRITE_SIZE * kProjectionPlaneDistance / corrected_distance;
+    const double bottom_of_wall = Config::y_center + int(projected_wall_height * 0.5);
+    const double top_of_wall = Config::y_center - int(projected_wall_height * 0.5);
+
+    DrawWallSlice(ray_collision, corrected_distance, brightness_level, bottom_of_wall, top_of_wall, ray_index);
+
+    const int last_bottom_of_wall = floor(bottom_of_wall);
+
+    // Floor Casting
+
+    // TODO: Continue working on floor casting
+    // for (int row = last_bottom_of_wall; row < Config::game_height; row++)
+    // {
+    //     const double ratio =
+    // }
 }
 
-void RayCaster::DrawWallSlice(const RayCollision *rayCollision,
-                     const int &ray_index,
-                     const int &rayDegree,
-                     const int &light_value) const
+void RayCaster::DrawWallSlice(const RayCollision *ray_collision,
+                              const double &corrected_distance,
+                              const double &brightness_level,
+                              const double &bottom_of_wall,
+                              const double &top_of_wall,
+                              const int &ray_index) const
 {
-    double corrected_distance = rayCollision->distance / Trigonometry::fFish[ray_index];
-    const double brightnessLevel = light_value / floor(corrected_distance);
     double intensity = 1.3;
-    if (corrected_distance > 600) {
+    if (corrected_distance > 600)
+    {
         intensity = 1;
-    } else if (corrected_distance > 900) {
+    }
+    else if (corrected_distance > 900)
+    {
         intensity = 0.75;
-    } else if (corrected_distance > 1200) {
+    }
+    else if (corrected_distance > 1200)
+    {
         intensity = 0.5;
     }
-    double projected_wall_height = Config::SPRITE_SIZE * PROJECTION_PLANE_DISTANCE / corrected_distance;
-    double bottom_of_wall = Config::y_center + int(projected_wall_height * 0.5);
-    double top_of_wall = Config::y_center - int(projected_wall_height * 0.5);
 
     // srcRect: part of the texture to be rendered in dstRect
-    const SDL_Rect srcRect = {int(rayCollision->offset), 0, 1, Config::SPRITE_SIZE};
+    const SDL_Rect srcRect = {int(ray_collision->offset), 0, 1, Config::SPRITE_SIZE};
     // dstRect: slice to be projected on screen
     const SDL_Rect dstRect = {ray_index, int(top_of_wall), 1, int(bottom_of_wall - top_of_wall) + 1};
 
     // Draw wall
-    int color = 255 * brightnessLevel * intensity;
+    int color = 255 * brightness_level * intensity;
 
     if (color > 255)
         color = 255;
@@ -82,31 +111,30 @@ void RayCaster::DrawWallSlice(const RayCollision *rayCollision,
     const Uint8 r = color;
     const Uint8 g = color;
     const Uint8 b = color;
-    SDL_SetTextureColorMod(rayCollision->object->texture(), r, g, b);
+    SDL_SetTextureColorMod(ray_collision->object->texture(), r, g, b);
     SDL_RenderCopy(
         renderer_,
-        rayCollision->object->texture(),
+        ray_collision->object->texture(),
         &srcRect,
         &dstRect);
 }
 
-const RayCollision *RayCaster::FindHorizontalRayCollision(const SDL_Point *playerPosition,
-                                                          const SDL_Rect *playerViewArea,
-                                                          const int &rayDegree) const
+const RayCollision *RayCaster::FindHorizontalRayCollision(const Player *player,
+                                                          const int &ray_degree) const
 {
-    bool isFacingDown = rayDegree > Config::ANGLE0 && rayDegree < Config::ANGLE180;
+    const bool is_facing_down = ray_degree > Config::ANGLE0 && ray_degree < Config::ANGLE180;
 
     // First time it intersects
-    double yIntersection = FindFirstHIntersectionY(playerPosition, isFacingDown);
-    double xIntersection = FindFirstHIntersectionX(rayDegree, playerPosition, yIntersection);
+    double y_intersection = FindFirstHIntersectionY(player->position(), is_facing_down);
+    double x_intersection = FindFirstHIntersectionX(ray_degree, player->position(), y_intersection);
 
-    if (!isFacingDown)
-        yIntersection -= 1.0;
+    if (!is_facing_down)
+        y_intersection -= 1.0;
 
-    int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
-    int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
+    int mapX = floor(x_intersection / double(Config::SPRITE_SIZE));
+    int mapY = floor(y_intersection / double(Config::SPRITE_SIZE));
 
-    const RayCollision *collision = map_->GetRayCollisionAt(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
+    const RayCollision *collision = map_->GetRayCollisionAt(mapX, mapY, true, player->position(), x_intersection, ray_degree);
 
     if (collision != NULL)
         return collision;
@@ -114,69 +142,68 @@ const RayCollision *RayCaster::FindHorizontalRayCollision(const SDL_Point *playe
     // Subsequent intersections
     while (true)
     {
-        yIntersection += FindNextHIntersectionY(isFacingDown);
-        xIntersection += FindNextHIntersectionX(rayDegree);
+        y_intersection += FindNextHIntersectionY(is_facing_down);
+        x_intersection += FindNextHIntersectionX(ray_degree);
 
-        int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
-        int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
+        int mapX = floor(x_intersection / double(Config::SPRITE_SIZE));
+        int mapY = floor(y_intersection / double(Config::SPRITE_SIZE));
 
-        collision = map_->GetRayCollisionAt(mapX, mapY, true, playerPosition, xIntersection, rayDegree);
+        collision = map_->GetRayCollisionAt(mapX, mapY, true, player->position(), x_intersection, ray_degree);
 
         if (collision != NULL)
         {
             return collision;
         }
 
-        if (RayIsOutsideViewArea(playerViewArea, xIntersection, yIntersection))
+        if (RayIsOutsideViewArea(player->view_area(), x_intersection, y_intersection))
         {
             return NULL;
         }
     }
 }
 
-double RayCaster::FindFirstHIntersectionY(const SDL_Point *playerPosition,
-                                          const bool &isFacingDown) const
+double RayCaster::FindFirstHIntersectionY(const SDL_Point *player_position,
+                                          const bool &is_facing_down) const
 {
-    double intersection = floor(playerPosition->y / double(Config::SPRITE_SIZE)) * Config::SPRITE_SIZE;
-    if (isFacingDown)
+    double intersection = floor(player_position->y / double(Config::SPRITE_SIZE)) * Config::SPRITE_SIZE;
+    if (is_facing_down)
         intersection += Config::SPRITE_SIZE;
     return intersection;
 }
 
-double RayCaster::FindFirstHIntersectionX(const int &rayDegree,
-                                          const SDL_Point *playerPosition,
-                                          const double &yIntersection) const
+double RayCaster::FindFirstHIntersectionX(const int &ray_degree,
+                                          const SDL_Point *player_position,
+                                          const double &y_intersection) const
 {
-    return (Trigonometry::fITanTable[rayDegree] * (yIntersection - playerPosition->y)) + playerPosition->x;
+    return (Trigonometry::fITanTable[ray_degree] * (y_intersection - player_position->y)) + player_position->x;
 }
 
-double RayCaster::FindNextHIntersectionY(const bool &isFacingDown) const
+double RayCaster::FindNextHIntersectionY(const bool &is_facing_down) const
 {
-    return (isFacingDown) ? double(Config::SPRITE_SIZE) : double(-Config::SPRITE_SIZE);
+    return (is_facing_down) ? double(Config::SPRITE_SIZE) : double(-Config::SPRITE_SIZE);
 }
 
-double RayCaster::FindNextHIntersectionX(const int &rayDegree) const
+double RayCaster::FindNextHIntersectionX(const int &ray_degree) const
 {
-    return Trigonometry::fXStepTable[rayDegree];
+    return Trigonometry::fXStepTable[ray_degree];
 }
 
-const RayCollision *RayCaster::FindVerticalRayCollision(const SDL_Point *playerPosition,
-                                                        const SDL_Rect *playerViewArea,
-                                                        const int &rayDegree) const
+const RayCollision *RayCaster::FindVerticalRayCollision(const Player *player,
+                                                        const int &ray_degree) const
 {
-    bool isFacingLeft = rayDegree > Config::ANGLE90 && rayDegree < Config::ANGLE270;
+    const bool is_facing_left = ray_degree > Config::ANGLE90 && ray_degree < Config::ANGLE270;
 
     // First time it intersects
-    double xIntersection = FindFirstVIntersectionX(playerPosition, isFacingLeft);
-    double yIntersection = FindFirstVIntersectionY(rayDegree, playerPosition, xIntersection);
+    double x_intersection = FindFirstVIntersectionX(player->position(), is_facing_left);
+    double y_intersection = FindFirstVIntersectionY(ray_degree, player->position(), x_intersection);
 
-    if (isFacingLeft)
-        xIntersection -= 1.0;
+    if (is_facing_left)
+        x_intersection -= 1.0;
 
-    int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
-    int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
+    int mapX = floor(x_intersection / double(Config::SPRITE_SIZE));
+    int mapY = floor(y_intersection / double(Config::SPRITE_SIZE));
 
-    const RayCollision *collision = map_->GetRayCollisionAt(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
+    const RayCollision *collision = map_->GetRayCollisionAt(mapX, mapY, false, player->position(), y_intersection, ray_degree);
 
     if (collision != NULL)
     {
@@ -186,58 +213,58 @@ const RayCollision *RayCaster::FindVerticalRayCollision(const SDL_Point *playerP
     // Subsequent intersections
     while (true)
     {
-        xIntersection += FindNextVIntersectionX(isFacingLeft);
-        yIntersection += FindNextVIntersectionY(rayDegree);
+        x_intersection += FindNextVIntersectionX(is_facing_left);
+        y_intersection += FindNextVIntersectionY(ray_degree);
 
-        int mapX = floor(xIntersection / double(Config::SPRITE_SIZE));
-        int mapY = floor(yIntersection / double(Config::SPRITE_SIZE));
+        int mapX = floor(x_intersection / double(Config::SPRITE_SIZE));
+        int mapY = floor(y_intersection / double(Config::SPRITE_SIZE));
 
-        collision = map_->GetRayCollisionAt(mapX, mapY, false, playerPosition, yIntersection, rayDegree);
+        collision = map_->GetRayCollisionAt(mapX, mapY, false, player->position(), y_intersection, ray_degree);
 
         if (collision != NULL)
         {
             return collision;
         }
 
-        if (RayIsOutsideViewArea(playerViewArea, xIntersection, yIntersection))
+        if (RayIsOutsideViewArea(player->view_area(), x_intersection, y_intersection))
         {
             return NULL;
         }
     }
 }
 
-double RayCaster::FindFirstVIntersectionX(const SDL_Point *playerPosition,
-                                          const bool &isFacingLeft) const
+double RayCaster::FindFirstVIntersectionX(const SDL_Point *player_position,
+                                          const bool &is_facing_left) const
 {
-    double intersection = floor(playerPosition->x / double(Config::SPRITE_SIZE)) * Config::SPRITE_SIZE;
-    if (!isFacingLeft)
+    double intersection = floor(player_position->x / double(Config::SPRITE_SIZE)) * Config::SPRITE_SIZE;
+    if (!is_facing_left)
         intersection += Config::SPRITE_SIZE;
     return intersection;
 }
 
-double RayCaster::FindFirstVIntersectionY(const int &rayDegree,
-                                          const SDL_Point *playerPosition,
-                                          const double &xIntersection) const
+double RayCaster::FindFirstVIntersectionY(const int &ray_degree,
+                                          const SDL_Point *player_position,
+                                          const double &x_intersection) const
 {
-    return (Trigonometry::fTanTable[rayDegree] * (xIntersection - playerPosition->x)) + playerPosition->y;
+    return (Trigonometry::fTanTable[ray_degree] * (x_intersection - player_position->x)) + player_position->y;
 }
 
-double RayCaster::FindNextVIntersectionX(const bool &isFacingLeft) const
+double RayCaster::FindNextVIntersectionX(const bool &is_facing_left) const
 {
-    return (isFacingLeft) ? double(-Config::SPRITE_SIZE) : double(Config::SPRITE_SIZE);
+    return (is_facing_left) ? double(-Config::SPRITE_SIZE) : double(Config::SPRITE_SIZE);
 }
 
-double RayCaster::FindNextVIntersectionY(const int &rayDegree) const
+double RayCaster::FindNextVIntersectionY(const int &ray_degree) const
 {
-    return Trigonometry::fYStepTable[rayDegree];
+    return Trigonometry::fYStepTable[ray_degree];
 }
 
-bool RayCaster::RayIsOutsideViewArea(const SDL_Rect *playerViewArea,
-                                     const double &xIntersection,
-                                     const double &yIntersection) const
+bool RayCaster::RayIsOutsideViewArea(const SDL_Rect *player_view_area,
+                                     const double &x_intersection,
+                                     const double &y_intersection) const
 {
     // If ray has gone out of view area, stop casting it
-    return (yIntersection < playerViewArea->y || yIntersection > playerViewArea->h || xIntersection < playerViewArea->x || xIntersection > playerViewArea->w);
+    return (y_intersection < player_view_area->y || y_intersection > player_view_area->h || x_intersection < player_view_area->x || x_intersection > player_view_area->w);
 }
 
 // Public methods
@@ -245,17 +272,17 @@ bool RayCaster::RayIsOutsideViewArea(const SDL_Rect *playerViewArea,
 void RayCaster::Cast(const Player *player) const
 {
     // Start casting rays from left to right of FOV
-    int rayDegree = player->rotation() - Config::ANGLE30;
-    if (rayDegree < 0)
-        rayDegree += Config::ANGLE360;
+    int ray_degree = player->rotation() - Config::ANGLE30;
+    if (ray_degree < 0)
+        ray_degree += Config::ANGLE360;
 
     for (int ray_index = 0; ray_index != Config::game_width; ++ray_index)
     {
-        CastSingleRay(player->position(), player->view_area(), rayDegree, ray_index);
-        ++rayDegree;
-        if (rayDegree >= Config::ANGLE360)
+        CastSingleRay(player, ray_degree, ray_index);
+        ++ray_degree;
+        if (ray_degree >= Config::ANGLE360)
         {
-            rayDegree -= Config::ANGLE360;
+            ray_degree -= Config::ANGLE360;
         }
     }
 }

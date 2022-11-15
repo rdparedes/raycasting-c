@@ -15,12 +15,12 @@ double fXStepTable[Config::ANGLE360 + 1];
 double fYStepTable[Config::ANGLE360 + 1];
 double fFish[Config::ANGLE60 + 1];
 
-double arcToRad(int angle)
+double ArcToRad(int angle)
 {
     return ((double(angle) * PI) / Config::ANGLE180);
 }
 
-double degToRad(int degree)
+double DegToRad(int degree)
 {
     return degree * PI / 180.0;
 }
@@ -31,7 +31,7 @@ bool Trigonometry::load()
 {
     for (int i = 0; i != (Config::ANGLE360 + 1); ++i)
     {
-        double radian = arcToRad(i) + (0.0001); // Add 0.0001 to avoid division by zero
+        double radian = ArcToRad(i) + (0.0001); // Add 0.0001 to avoid division by zero
         fSinTable[i] = std::sin(radian);
         fISinTable[i] = 1.0 / fSinTable[i];
         fCosTable[i] = std::cos(radian);
@@ -66,7 +66,7 @@ bool Trigonometry::load()
     // Fishbowl distortion fix
     for (int i = -Config::ANGLE30; i != (Config::ANGLE30 + 1); ++i)
     {
-        double radian = arcToRad(i);
+        double radian = ArcToRad(i);
         int index = i + Config::ANGLE30;
         fFish[index] = 1.0 / std::cos(radian);
     }

@@ -2,7 +2,7 @@
 #include <map>
 #include <iostream>
 
-const char EMPTY = '.';
+const char kEmpty = '.';
 
 void Map::Init(const std::vector<std::vector<char>> &encoded_map, const std::map<const char, CollidableObject *> &object_dictionary)
 {
@@ -70,7 +70,7 @@ const RayCollision *Map::GetRayCollisionAt(const int &x,
     }
     const char objectKey = encoded_map_[x][y];
 
-    if (objectKey == EMPTY)
+    if (objectKey == kEmpty)
     {
         return NULL;
     }

@@ -19,8 +19,8 @@ extern double fXStepTable[Config::ANGLE360 + 1];
 extern double fYStepTable[Config::ANGLE360 + 1];
 extern double fFish[Config::ANGLE60 + 1];
 
-double arcToRad(int);
-double degToRad(int);
+double ArcToRad(int);
+double DegToRad(int);
 bool load();
 }; // namespace Trigonometry
 

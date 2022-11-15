@@ -7,8 +7,6 @@
 
 class Player
 {
-    const int k_view_distance_ = 20;
-    const int k_speed_ = 6;
     int rotation_;
 
     // Centers the marker sprite (x coordinate) when it's rendered
@@ -31,6 +29,9 @@ class Player
     const double &y_direction() const;
 
 public:
+    const int kViewDistance = 25;
+    const int kSpeed = 6;
+    const int kHeight = 32;
     const SDL_Point markerCenter = {8, 8};
 
     void Init(const Map *, SDL_Renderer *, const int &, const int &);
